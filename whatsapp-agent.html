@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Agente de IA para WhatsApp | Escal IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="description" content="Tu negocio responde consultas de WhatsApp solo, 24/7, sin contratar a nadie. Agente de IA para PyMEs que se ahogan en mensajes.">
+  <meta name="keywords" content="agente WhatsApp, IA para PyMEs, automatización WhatsApp, respuestas automáticas, chatbot WhatsApp Argentina">
+  <meta name="author" content="Escal IA – Data Solutions">
+
+  <meta property="og:title" content="Agente de IA para WhatsApp | Escal IA" />
+  <meta property="og:description" content="Dejá de perder ventas por no responder a tiempo. Tu negocio responde solo — 24/7, sin contratar nadie." />
+  <meta property="og:type" content="website" />
+
+  <style>
+    :root {
+      --bg: #0a2540;
+      --accent: #3ecf8e;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --light: #f8fafc;
+      --border: #e5e7eb;
+      --success: #166534;
+      --success-bg: #dcfce7;
+      --error: #991b1b;
+      --error-bg: #fee2e2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: #ffffff;
+      line-height: 1.6;
+    }
+
+    a { color: var(--bg); text-decoration: none; }
+    img { max-width: 100%; height: auto; border: 0; }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--bg), var(--accent));
+    }
+
+    .brand-name {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .nav a.cta {
+      padding: 10px 14px;
+      background: var(--bg);
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(180deg, #f6fafe 0%, #ffffff 100%);
+      padding: 64px 0 48px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 12px;
+    }
+
+    h1 {
+      font-size: 40px;
+      line-height: 1.15;
+      margin: 10px 0;
+      color: var(--bg);
+    }
+
+    h2 {
+      color: var(--bg);
+      margin-bottom: 10px;
+    }
+
+    h3 { color: var(--bg); }
+
+    .lead {
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 24px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 13px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      border: 2px solid transparent;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #083344;
+    }
+
+    .btn-primary:hover { opacity: 0.92; }
+
+    .btn-secondary {
+      border-color: var(--bg);
+      color: var(--bg);
+    }
+
+    /* Sections */
+    section { padding: 56px 0; }
+
+    .section-alt { background: #fafafa; }
+
+    .section-dark {
+      background: var(--bg);
+      color: #e2e8f0;
+    }
+
+    .section-dark h2 { color: #fff; }
+    .section-dark .muted { color: #94a3b8; }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .card h3 { margin: 8px 0 6px; }
+
+    /* Grids */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    /* Steps — 3 col for this landing */
+    .steps-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .step-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .step-connector {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    /* KPIs */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      text-align: center;
+    }
+
+    .kpi {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 16px;
+    }
+
+    .kpi .value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--bg);
+      line-height: 1.1;
+    }
+
+    .kpi .label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Pain cards */
+    .pain-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .pain-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .pain-card h3 { margin: 0 0 6px; }
+
+    /* Solution features */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feature-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .feature-list li::before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23083344'%3E%3Cpath d='M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* Dashboard mockup */
+    .dashboard-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(10, 37, 64, 0.10);
+    }
+
+    .dash-topbar {
+      background: var(--bg);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dash-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dash-dot.red   { background: #ef4444; }
+    .dash-dot.yellow { background: #f59e0b; }
+    .dash-dot.green  { background: var(--accent); }
+
+    .dash-title {
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+
+    .dash-body { padding: 20px; }
+
+    .dash-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .dash-kpi {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .dash-kpi .dv {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--bg);
+    }
+
+    .dash-kpi .dl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .dash-kpi .dv.green { color: #16a34a; }
+
+    .dash-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+
+    .dash-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 80px;
+      margin-bottom: 18px;
+    }
+
+    .dash-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .dash-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: var(--bg);
+      opacity: 0.15;
+    }
+
+    .dash-bar.active {
+      background: var(--accent);
+      opacity: 1;
+    }
+
+    .dash-bar-label {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .dash-row-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .dash-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--light);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .dash-row .tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .tag-green { background: var(--success-bg); color: var(--success); }
+    .tag-blue  { background: #dbeafe; color: #1e40af; }
+    .tag-gray  { background: var(--border); color: var(--muted); }
+
+    /* Testimonials */
+    .quote { font-style: italic; color: var(--text); margin: 0 0 10px; }
+    .author { font-weight: 700; color: var(--bg); font-size: 14px; }
+    .author-role { color: var(--muted); font-size: 13px; }
+
+    /* CTA form */
+    .cta-block {
+      background: linear-gradient(180deg, #ffffff 0%, #f6fafe 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .contact-form input,
+    .contact-form select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease;
+      appearance: none;
+    }
+
+    .contact-form select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 18px;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    .contact-form input:focus,
+    .contact-form select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.15);
+    }
+
+    .form-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 18px;
+      border: none;
+      border-radius: 12px;
+      background: var(--bg);
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity .2s ease;
+      width: 100%;
+    }
+
+    .form-submit:hover { opacity: 0.92; }
+
+    .form-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .form-status {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .form-status.success {
+      display: block;
+      color: var(--success);
+      background: var(--success-bg);
+      border: 1px solid #86efac;
+    }
+
+    .form-status.error {
+      display: block;
+      color: var(--error);
+      background: var(--error-bg);
+      border: 1px solid #fca5a5;
+    }
+
+    .form-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    /* FAQ */
+    details {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #fff;
+    }
+
+    details + details { margin-top: 10px; }
+    details[open] summary { margin-bottom: 8px; }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--bg);
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    summary::after {
+      content: '+';
+      font-size: 20px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    details[open] summary::after { content: '−'; }
+
+    /* Social proof strip */
+    .proof-strip {
+      padding: 20px 0;
+      background: var(--light);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .proof-strip strong { color: var(--bg); }
+
+    /* Urgency badge */
+    .urgency {
+      display: inline-block;
+      background: #fff3cd;
+      border: 1px solid #fbbf24;
+      color: #92400e;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    /* Muted */
+    .muted { color: var(--muted); }
+
+    /* Footer */
+    footer {
+      padding: 28px 0;
+      background: #0b1726;
+      color: #cbd5e1;
+    }
+
+    footer a { color: #e2e8f0; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-grid,
+      .grid-3,
+      .grid-2,
+      .grid-4,
+      .steps-3,
+      .kpis,
+      .form-row,
+      .dash-kpis {
+        grid-template-columns: 1fr;
+      }
+
+      h1 { font-size: 30px; }
+
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+
+      .dash-chart { height: 60px; }
+    }
+
+    @media (max-width: 600px) {
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <div class="brand-logo" aria-hidden="true"></div>
+        <div class="brand-name">Escal IA – Data Solutions</div>
+      </a>
+      <nav>
+        <a class="cta" href="#demo">Pedí tu demo</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Agente de IA para WhatsApp</div>
+        <h1>Estás pagando a alguien solo para responder mensajes. Y aun así no alcanza.</h1>
+        <p class="lead">
+          Tu negocio responde solo — 24/7, en segundos, sin contratar a nadie más.
+          El agente entiende las consultas de tus clientes y responde como vos querés.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#demo">Quiero verlo en acción</a>
+          <a class="btn btn-secondary" href="#como-funciona">Cómo funciona</a>
+        </div>
+        <p class="muted" style="margin-top:16px; font-size:14px;">
+          Sin cambiar tu número · Listo en menos de una semana · Sin permanencia
+        </p>
+      </div>
+
+      <!-- Hero visual: chat mockup -->
+      <div>
+        <div style="background:#fff; border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(10,37,64,0.10);">
+          <div style="background:#075e54; padding:14px 16px; display:flex; align-items:center; gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
+            <div>
+              <div style="color:#fff;font-weight:700;font-size:14px;">Agente Escal IA</div>
+              <div style="color:#25d366;font-size:12px;">● En línea ahora</div>
+            </div>
+          </div>
+          <div style="background:#e5ddd5;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:220px;">
+            <div style="align-self:flex-start;background:#fff;border-radius:0 10px 10px 10px;padding:10px 14px;max-width:80%;font-size:14px;box-shadow:0 1px 2px rgba(0,0,0,.1);">
+              Hola! Quisiera saber el precio del servicio mensual y si tienen disponibilidad esta semana
+            </div>
+            <div style="align-self:flex-end;background:#dcf8c6;border-radius:10px 0 10px 10px;padding:10px 14px;max-width:80%;font-size:14px;box-shadow:0 1px 2px rgba(0,0,0,.1);">
+              ¡Hola! El plan mensual arranca en $45.000. Tenemos disponibilidad el martes y jueves esta semana. ¿Te agendo una consulta? 😊
+              <div style="font-size:11px;color:#6b7280;text-align:right;margin-top:4px;">✓✓ hace 3 seg</div>
+            </div>
+            <div style="align-self:flex-start;background:#fff;border-radius:0 10px 10px 10px;padding:10px 14px;max-width:80%;font-size:14px;box-shadow:0 1px 2px rgba(0,0,0,.1);">
+              Perfecto, el martes me viene bien
+            </div>
+            <div style="align-self:flex-end;background:#dcf8c6;border-radius:10px 0 10px 10px;padding:10px 14px;max-width:80%;font-size:14px;box-shadow:0 1px 2px rgba(0,0,0,.1);">
+              Listo! Te confirmé el turno para el martes a las 10hs. Te llega un recordatorio el día anterior. ¡Hasta el martes! 👋
+              <div style="font-size:11px;color:#6b7280;text-align:right;margin-top:4px;">✓✓ hace 1 seg</div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:10px;">
+          Esto pasó mientras vos dormías.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Proof strip -->
+  <div class="proof-strip">
+    <strong>+200 consultas automatizadas por día</strong> en negocios que ya usan el agente &nbsp;·&nbsp;
+    Respuestas en <strong>menos de 5 segundos</strong> &nbsp;·&nbsp;
+    <strong>0 mensajes sin responder</strong>
+  </div>
+
+  <!-- Problema -->
+  <section class="section-alt" id="problema">
+    <div class="container">
+      <div class="section-label">El problema</div>
+      <h2>¿Esto te suena familiar?</h2>
+      <p class="muted" style="margin-bottom:24px;">No sos el único. Es lo que nos cuenta casi todo dueño de PyME que llega hasta acá.</p>
+
+      <div class="grid-3">
+        <div class="pain-card">
+          <div class="pain-icon">😩</div>
+          <div>
+            <h3>Son las 11 de la noche y hay 40 mensajes sin responder</h3>
+            <p class="muted" style="margin:0;">Cada uno es un potencial cliente. Mañana ya van a haber comprado en otro lado.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">💸</div>
+          <div>
+            <h3>Contrataste a alguien solo para atender el WhatsApp — y aun así no alcanza</h3>
+            <p class="muted" style="margin:0;">Sueldo, cargas sociales, vacaciones… y los fines de semana siguen sin cubrirse.</p>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon">📉</div>
+          <div>
+            <h3>Perdiste una venta porque tardaste en responder</h3>
+            <p class="muted" style="margin:0;">El cliente preguntó, esperó diez minutos y compró en la competencia. Lo sabés porque a veces te avisan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solución -->
+  <section id="solucion">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;">
+        <div>
+          <div class="section-label">La solución</div>
+          <h2>El agente lee, entiende y responde. Vos revisás cuando querés.</h2>
+          <p class="muted">
+            No es un bot de respuestas fijas. Es un agente entrenado con la información real de tu negocio: tus precios, horarios, preguntas frecuentes, forma de hablar.
+            Responde como lo haría alguien de tu equipo.
+          </p>
+          <ul class="feature-list">
+            <li>Responde consultas de precios, horarios y disponibilidad al instante</li>
+            <li>Agenda citas y confirma turnos directo desde el chat</li>
+            <li>Detecta oportunidades de venta y capta los datos del lead</li>
+            <li>Deriva al humano solo cuando la consulta lo requiere</li>
+            <li>Funciona 24/7, incluso cuando tu equipo no está disponible</li>
+            <li>Registra todo: cada consulta queda guardada y accesible</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card" style="padding:24px;">
+            <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;">Tus consultas frecuentes — resueltas</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="background:var(--light);border-radius:10px;padding:12px 14px;font-size:14px;">
+                <span style="color:var(--muted);">Cliente pregunta:</span><br>
+                <strong>"¿Cuánto sale el plan y qué incluye?"</strong>
+              </div>
+              <div style="background:#dcf8c6;border-radius:10px;padding:12px 14px;font-size:14px;">
+                <span style="color:#166534;font-weight:700;">Agente responde en 3 seg:</span><br>
+                Precio + detalle + CTA a agendar
+              </div>
+              <div style="background:var(--light);border-radius:10px;padding:12px 14px;font-size:14px;">
+                <span style="color:var(--muted);">Cliente pregunta:</span><br>
+                <strong>"¿Tienen disponibilidad esta semana?"</strong>
+              </div>
+              <div style="background:#dcf8c6;border-radius:10px;padding:12px 14px;font-size:14px;">
+                <span style="color:#166534;font-weight:700;">Agente responde en 3 seg:</span><br>
+                Horarios disponibles + confirmación de turno
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo funciona -->
+  <section class="section-alt" id="como-funciona">
+    <div class="container">
+      <div class="section-label">El proceso</div>
+      <h2>Tres pasos. Una semana. Tu negocio responde solo.</h2>
+
+      <div class="steps-3">
+        <div class="card" style="text-align:center; padding:28px 22px;">
+          <div class="step-num" style="margin:0 auto 12px;">1</div>
+          <h3>Conectamos tu WhatsApp</h3>
+          <p class="muted" style="margin:0;">Sin cambiar tu número ni tu app. La integración tarda menos de un día y no interrumpe tu operación actual.</p>
+        </div>
+        <div class="card" style="text-align:center; padding:28px 22px;">
+          <div class="step-num" style="margin:0 auto 12px;">2</div>
+          <h3>Entrenamos el agente con tu negocio</h3>
+          <p class="muted" style="margin:0;">Nos pasás tus preguntas frecuentes, precios y forma de comunicarte. El agente aprende a responder como vos querés que se responda.</p>
+        </div>
+        <div class="card" style="text-align:center; padding:28px 22px;">
+          <div class="step-num" style="margin:0 auto 12px;">3</div>
+          <h3>Empieza a responder solo</h3>
+          <p class="muted" style="margin:0;">Desde el primer día tus clientes reciben respuestas inmediatas. Vos seguís vendiendo y ajustás lo que quieras desde el panel.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios / Métricas -->
+  <section id="beneficios">
+    <div class="container">
+      <div class="section-label">Resultados reales</div>
+      <h2>Lo que cambia en tu negocio desde la primera semana</h2>
+
+      <div class="kpis" style="margin-top:20px;">
+        <div class="kpi">
+          <div class="value">-70%</div>
+          <div class="label">Mensajes sin responder en la primera semana</div>
+        </div>
+        <div class="kpi">
+          <div class="value">&lt; 5s</div>
+          <div class="label">Tiempo de respuesta promedio (vs. 2–4 hs sin el agente)</div>
+        </div>
+        <div class="kpi">
+          <div class="value">24/7</div>
+          <div class="label">Cobertura sin horas extra ni fin de semana</div>
+        </div>
+        <div class="kpi">
+          <div class="value">-50%</div>
+          <div class="label">Carga operativa en atención al cliente</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section class="section-alt" id="dashboard">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;">
+        <div>
+          <div class="section-label">Panel de control</div>
+          <h2>Sabés exactamente qué está haciendo tu agente, en todo momento.</h2>
+          <p class="muted">
+            No es una caja negra. Tenés un dashboard en tiempo real donde ves cada conversación,
+            cuántas consultas se resolvieron, qué consultas generaron ventas y cómo viene la semana.
+          </p>
+          <ul class="feature-list" style="margin-top:12px;">
+            <li>Consultas del día: recibidas, respondidas, derivadas</li>
+            <li>Conversiones: cuántos leads captó el agente hoy</li>
+            <li>Tendencia semanal con comparativa</li>
+            <li>Historial completo de cada conversación</li>
+            <li>Alertas si hay algo que el agente no sabe responder</li>
+          </ul>
+          <p class="muted" style="margin-top:16px; font-size:14px;">
+            Si algo no te gusta de cómo responde, lo ajustás desde el panel y el agente aprende al instante.
+          </p>
+        </div>
+
+        <!-- Dashboard mockup -->
+        <div>
+          <div class="dashboard-wrap">
+            <div class="dash-topbar">
+              <div class="dash-dot red"></div>
+              <div class="dash-dot yellow"></div>
+              <div class="dash-dot green"></div>
+              <div class="dash-title">Panel de control — Tu Negocio</div>
+            </div>
+            <div class="dash-body">
+              <div class="dash-kpis">
+                <div class="dash-kpi">
+                  <div class="dv">147</div>
+                  <div class="dl">Consultas hoy</div>
+                </div>
+                <div class="dash-kpi">
+                  <div class="dv green">139</div>
+                  <div class="dl">Respondidas</div>
+                </div>
+                <div class="dash-kpi">
+                  <div class="dv">23</div>
+                  <div class="dl">Leads captados</div>
+                </div>
+                <div class="dash-kpi">
+                  <div class="dv">8</div>
+                  <div class="dl">Turnos agendados</div>
+                </div>
+              </div>
+
+              <div class="dash-section-title">Consultas por día — últimos 7 días</div>
+              <div class="dash-chart">
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar" style="height:45%;"></div>
+                  <div class="dash-bar-label">L</div>
+                </div>
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar" style="height:60%;"></div>
+                  <div class="dash-bar-label">M</div>
+                </div>
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar" style="height:50%;"></div>
+                  <div class="dash-bar-label">X</div>
+                </div>
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar" style="height:75%;"></div>
+                  <div class="dash-bar-label">J</div>
+                </div>
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar" style="height:65%;"></div>
+                  <div class="dash-bar-label">V</div>
+                </div>
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar" style="height:30%;"></div>
+                  <div class="dash-bar-label">S</div>
+                </div>
+                <div class="dash-bar-wrap">
+                  <div class="dash-bar active" style="height:95%;"></div>
+                  <div class="dash-bar-label" style="color:var(--accent);font-weight:700;">H</div>
+                </div>
+              </div>
+
+              <div class="dash-section-title">Últimas conversaciones</div>
+              <div class="dash-row-list">
+                <div class="dash-row">
+                  <span>+54 9 11 ●●●● 4821 — precio mensual</span>
+                  <span class="tag tag-green">Respondida</span>
+                </div>
+                <div class="dash-row">
+                  <span>+54 9 351 ●●●● 9034 — turno martes</span>
+                  <span class="tag tag-green">Agendado</span>
+                </div>
+                <div class="dash-row">
+                  <span>+54 9 11 ●●●● 2267 — reclamo factura</span>
+                  <span class="tag tag-blue">Derivada</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonios -->
+  <section id="testimonios">
+    <div class="container">
+      <div class="section-label">Prueba social</div>
+      <h2>Lo que dicen quienes ya dejaron de ahogarse en mensajes</h2>
+
+      <div class="grid-3" style="margin-top:20px;">
+        <div class="card">
+          <p class="quote">"Teníamos una chica contratada solo para responder WhatsApp y aun así nos quedaban mensajes sin responder los fines de semana. Desde que pusimos el agente, esa persona pasó a hacer otras cosas que realmente importan."</p>
+          <div class="author">Marcela G.</div>
+          <div class="author-role">Centro de estética, CABA</div>
+        </div>
+        <div class="card">
+          <p class="quote">"La primera semana el agente respondió 300 consultas. Yo respondí cero. Cero. Y no perdí ninguna venta. Al revés, vendí más porque respondía en segundos cuando yo tardaba horas."</p>
+          <div class="author">Rodrigo S.</div>
+          <div class="author-role">Tienda online de indumentaria</div>
+        </div>
+        <div class="card">
+          <p class="quote">"Lo que más me gustó es que puedo ver todo desde el panel. Sé exactamente qué respondió el agente, cuándo, y si el cliente quedó conforme. No es un bot que hace lo que quiere — es una herramienta que yo controlo."</p>
+          <div class="author">Valeria M.</div>
+          <div class="author-role">Academia de idiomas online</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulario de demo -->
+  <section class="section-alt" id="demo">
+    <div class="container">
+      <div class="cta-block">
+        <div class="urgency">⚡ Demo sin costo — agenda tu lugar esta semana</div>
+        <h2>Probá el agente con tu negocio real</h2>
+        <p class="muted">
+          Te mostramos cómo respondería el agente a las consultas que vos recibís todos los días.
+          Sin compromiso, sin instalar nada, en 30 minutos.
+        </p>
+
+        <form id="demoForm" class="contact-form" novalidate>
+          <div class="form-row">
+            <input
+              type="text"
+              name="nombre"
+              placeholder="Tu nombre"
+              required
+              autocomplete="name"
+            />
+            <input
+              type="text"
+              name="empresa"
+              placeholder="Tu empresa o negocio"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <input
+              type="tel"
+              name="whatsapp"
+              placeholder="Tu WhatsApp (+54 9...)"
+              required
+              autocomplete="tel"
+            />
+            <select name="mensajes_dia" required>
+              <option value="" disabled selected>¿Cuántos mensajes recibís por día?</option>
+              <option value="menos-de-20">Menos de 20</option>
+              <option value="20-50">Entre 20 y 50</option>
+              <option value="50-100">Entre 50 y 100</option>
+              <option value="mas-de-100">Más de 100</option>
+            </select>
+          </div>
+
+          <button type="submit" class="form-submit" id="submitBtn">
+            Quiero ver el agente en acción
+          </button>
+
+          <div id="formStatus" class="form-status"></div>
+        </form>
+
+        <p class="form-note">
+          Te contactamos por WhatsApp en menos de 24 horas para coordinar la demo.
+          Sin spam, sin permanencia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-label">Preguntas frecuentes</div>
+      <h2>Lo que todos preguntan antes de arrancar</h2>
+
+      <div style="margin-top:20px;">
+        <details>
+          <summary>¿Necesito cambiar mi número de WhatsApp?</summary>
+          <p class="muted" style="margin:0;">
+            No. El agente se conecta a tu número actual. Tus clientes siguen escribiéndote al mismo lugar. No notarán ningún cambio — solo que respondés más rápido.
+          </p>
+        </details>
+
+        <details>
+          <summary>¿Qué pasa si el cliente hace una pregunta que el agente no sabe responder?</summary>
+          <p class="muted" style="margin:0;">
+            El agente reconoce cuando no tiene suficiente información y deriva la conversación a vos o a alguien de tu equipo. También te llega una notificación para que puedas ver de qué se trata. Con el tiempo, esos casos se vuelven cada vez menos frecuentes.
+          </p>
+        </details>
+
+        <details>
+          <summary>¿Cuánto tarda en estar listo?</summary>
+          <p class="muted" style="margin:0;">
+            Menos de una semana en la mayoría de los casos. El proceso es: conectamos el número (1 día), entrenamos el agente con tu información (2–3 días) y hacemos pruebas juntos antes de activarlo para tus clientes.
+          </p>
+        </details>
+
+        <details>
+          <summary>¿Puedo ver todo lo que responde el agente?</summary>
+          <p class="muted" style="margin:0;">
+            Sí. Tenés acceso al historial completo de conversaciones desde el panel. Podés ver cada mensaje, cuándo se respondió y ajustar las respuestas cuando quieras. Es tu agente — vos tenés el control.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center;">
+      <div>© <span id="y"></span> Escal IA – Data Solutions. Todos los derechos reservados.</div>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="https://www.linkedin.com/company/escal-ia" rel="noopener">LinkedIn</a>
+        <a href="https://www.instagram.com/escal.ia" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/EscalaConIA" rel="noopener">Facebook</a>
+        <a href="https://wa.me/5493794260543" rel="noopener">WhatsApp</a>
+        <a href="index.html">Volver al sitio</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Form submission
+    var form = document.getElementById('demoForm');
+    var statusBox = document.getElementById('formStatus');
+    var submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      var whatsapp = form.querySelector('[name="whatsapp"]').value.trim();
+      if (!whatsapp) {
+        statusBox.textContent = 'Por favor ingresá tu número de WhatsApp.';
+        statusBox.className = 'form-status error';
+        return;
+      }
+
+      var mensajes = form.querySelector('[name="mensajes_dia"]').value;
+      if (!mensajes) {
+        statusBox.textContent = 'Por favor indicá cuántos mensajes recibís por día.';
+        statusBox.className = 'form-status error';
+        return;
+      }
+
+      statusBox.className = 'form-status';
+      statusBox.textContent = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      var formData = new FormData(form);
+      var payload = {
+        nombre: formData.get('nombre'),
+        empresa: formData.get('empresa'),
+        whatsapp: formData.get('whatsapp'),
+        mensajes_dia: formData.get('mensajes_dia'),
+        origen: 'landing-whatsapp-agent',
+        fecha: new Date().toISOString()
+      };
+
+      try {
+        var response = await fetch('https://neogen-n8n-n8n.8fevsr.easypanel.host/webhook/landing-escalia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error('Error en webhook');
+
+        statusBox.textContent = 'Perfecto. Te contactamos por WhatsApp en las próximas 24 horas para coordinar la demo.';
+        statusBox.className = 'form-status success';
+        form.reset();
+      } catch (err) {
+        statusBox.textContent = 'Hubo un problema al enviar el formulario. Podés escribirnos directamente por WhatsApp o por nuestras redes en el pie de página.';
+        statusBox.className = 'form-status error';
+        console.error('Error enviando formulario:', err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Quiero ver el agente en acción';
+      }
+    });
+  </script>
+</body>
+</html>
