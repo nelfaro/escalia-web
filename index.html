@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escal IA – Agente de IA para WhatsApp</title>
-  <meta name="description" content="Tu agente de IA responde consultas, convierte leads y cierra ventas por WhatsApp. 24/7, sin contratar nadie. Para PyMEs argentinas.">
+  <meta name="description" content="Tu agente de IA responde consultas, convierte leads y cierra ventas por WhatsApp. 24/7, sin contratar nadie.">
   <meta name="author" content="Escal IA – Data Solutions">
 
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -13,24 +13,25 @@
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" />
 
   <style>
-    /* ── VARIABLES ───────────────────────────────────────────────── */
+    /* ── VARIABLES ───────────────────────────────────── */
     :root {
-      --bg:              #0b1f3b;
-      --bg-deep:         #060f1e;
-      --bg-card:         #0d2444;
+      --bg:              #02030a;
+      --bg-card:         rgba(10, 25, 55, 0.55);
+      --bg-card-hover:   rgba(15, 35, 75, 0.70);
       --accent-blue:     #1a6bff;
       --accent-blue-lt:  #4d8fff;
       --accent-green:    #00c896;
       --accent-green-lt: #00e8ad;
       --fg:              #f0eff0;
       --fg-sub:          #b8c4d4;
-      --border:          rgba(255, 255, 255, 0.08);
-      --radius:          12px;
+      --border:          rgba(76, 201, 255, 0.15);
+      --border-hover:    rgba(76, 201, 255, 0.35);
+      --radius:          14px;
       --font-display:    'General Sans', sans-serif;
       --font-body:       'Geist Sans', 'Inter', system-ui, sans-serif;
     }
 
-    /* ── RESET ───────────────────────────────────────────────────── */
+    /* ── RESET ───────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -39,1036 +40,1294 @@
       color: var(--fg);
       line-height: 1.6;
       overflow-x: hidden;
+      overflow-y: scroll;
+      cursor: default;
     }
     a { color: var(--fg); text-decoration: none; }
+    button { font-family: var(--font-body); cursor: pointer; }
 
-    /* ── LAYOUT ──────────────────────────────────────────────────── */
-    .container {
+    /* ── CANVAS (fixed background) ───────────────────── */
+    #gl {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── DARK OVERLAY ────────────────────────────────── */
+    .overlay-dark {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 3, 10, 0.45);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── CONTENT STACK ───────────────────────────────── */
+    .content-stack {
+      position: relative;
+      z-index: 10;
       width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
     }
-    section { padding: 80px 0; }
-    .section-alt { background: #091830; }
-    .section-center { text-align: center; }
-    .section-center .lead { margin-left: auto; margin-right: auto; }
 
-    /* ── TYPE ────────────────────────────────────────────────────── */
-    h1, h2, h3 {
-      font-family: var(--font-display);
-      color: var(--fg);
-      line-height: 1.15;
-    }
-    h2 {
-      font-size: clamp(26px, 3.8vw, 40px);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
-    }
-    h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-    .eyebrow {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--accent-green);
-      margin-bottom: 8px;
-    }
-    .lead {
-      font-size: 18px;
-      color: var(--fg-sub);
-      line-height: 1.7;
-      max-width: 560px;
-    }
-    .muted { color: var(--fg-sub); }
-
-    /* ── CARDS ───────────────────────────────────────────────────── */
-    .card {
+    /* ── GLASS ───────────────────────────────────────── */
+    .glass {
       background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 24px;
-    }
-
-    /* ── GRIDS ───────────────────────────────────────────────────── */
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-
-    /* ── BUTTONS ─────────────────────────────────────────────────── */
-    .btn {
-      display: inline-block;
-      padding: 13px 28px;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background .2s, opacity .2s;
-      border: none;
-      font-family: var(--font-body);
-    }
-    .btn-primary { background: var(--accent-blue); color: var(--fg); }
-    .btn-primary:hover { background: var(--accent-blue-lt); }
-    .btn-outline { border: 1px solid var(--border); color: var(--fg); background: transparent; }
-    .btn-outline:hover { background: rgba(255,255,255,0.05); }
-
-    /* ── LIQUID GLASS ────────────────────────────────────────────── */
-    .liquid-glass {
-      background: rgba(255, 255, 255, 0.01);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: none;
-      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+      transition: border-color 0.25s, background 0.25s;
       position: relative;
-      overflow: hidden;
     }
-    .liquid-glass::before {
-      content: "";
+    .glass:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+    }
+    .glass::before {
+      content: '';
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      padding: 1.4px;
-      background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.35)  0%,
-        rgba(255,255,255,0.10) 20%,
-        rgba(255,255,255,0.00) 40%,
-        rgba(255,255,255,0.00) 60%,
-        rgba(255,255,255,0.10) 80%,
-        rgba(255,255,255,0.35) 100%
-      );
+      padding: 1px;
+      background: linear-gradient(135deg,
+        rgba(76,201,255,0.25)  0%,
+        rgba(76,201,255,0)    40%,
+        rgba(76,201,255,0)    60%,
+        rgba(76,201,255,0.10) 100%);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events: none;
-    }
-
-    /* ── FEATURE LIST ────────────────────────────────────────────── */
-    .feature-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 20px;
-    }
-    .feature-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 15px;
-      color: var(--fg-sub);
-    }
-    .feature-list li::before {
-      content: '';
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--accent-green);
-      flex-shrink: 0;
-      margin-top: 2px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23060f1e'%3E%3Cpath d='M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z'/%3E%3C/svg%3E");
-      background-size: 12px;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
-    /* ════════════════════════════════════════════════════════════ */
-    /*  1. HERO                                                     */
-    /* ════════════════════════════════════════════════════════════ */
-    .hero {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: visible;
-      display: flex;
-      flex-direction: column;
-    }
-    .hero-video-clip {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
       z-index: 0;
     }
-    #bgVideo {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+
+    /* ── LAYOUT UTILS ────────────────────────────────── */
+    .container { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+    .section    { padding: 120px 0; }
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-green);
+      margin-bottom: 16px;
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-lt), #a8d4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── ANIMATIONS ──────────────────────────────────── */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.85); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(8px); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .fade-in {
       opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.6s cubic-bezier(0.16,1,0.3,1);
     }
-    .blur-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 984px;
-      height: 527px;
-      background: var(--bg-deep);
-      filter: blur(82px);
-      opacity: 0.90;
-      z-index: 1;
-      pointer-events: none;
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
-    .hero-inner {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
+
+    /* ═════════════════════════════════ 1. HERO ════════ */
+    .hero {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
     /* Navbar */
     .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-radius: 0;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      padding: 16px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 32px;
-      flex-shrink: 0;
+      transition: backdrop-filter 0.3s, background 0.3s, border-color 0.3s;
+    }
+    .navbar.scrolled {
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      background: rgba(10,25,55,0.75);
+      border-bottom-color: var(--border-hover);
     }
     .brand {
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 22px;
+      font-size: 20px;
       color: var(--fg);
       letter-spacing: -0.01em;
     }
-    .nav-links { display: flex; list-style: none; gap: 32px; }
-    .nav-links a {
-      font-size: 15px;
-      color: var(--fg);
-      opacity: 0.8;
-      transition: opacity .2s;
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 32px;
     }
-    .nav-links a:hover { opacity: 1; }
-    .nav-cta {
+    .nav-links a {
+      color: var(--fg-sub);
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-btn {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 999px;
+      color: var(--fg);
       font-size: 14px;
       font-weight: 500;
-      color: var(--fg);
-      border-radius: 999px;
-      padding: 8px 20px;
-      transition: background .2s;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
-    .nav-cta:hover { background: rgba(26,107,255,0.15) !important; }
-    .nav-divider {
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, rgba(240,239,240,0.15), transparent);
-      flex-shrink: 0;
+    .nav-btn:hover {
+      border-color: var(--accent-blue) !important;
+      color: var(--fg);
     }
 
-    /* Hero copy */
-    .hero-content {
+    /* Hero inner */
+    .hero-inner {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0 24px;
+      padding: 60px 32px 0;
+    }
+    .eyebrow-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--fg-sub);
+      letter-spacing: 0.05em;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
     }
     .headline {
       font-family: var(--font-display);
-      font-size: clamp(72px, 11vw, 152px);
-      font-weight: 600;
-      line-height: 1.02;
-      letter-spacing: -0.024em;
+      font-size: clamp(40px, 7.5vw, 96px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
       color: var(--fg);
-      white-space: nowrap;
-    }
-    .gradient-ia {
-      background: linear-gradient(to left, #1a6bff, #4d8fff, #7eb8ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      max-width: 800px;
     }
     .hero-subtitle {
       font-size: 18px;
-      line-height: 1.8;
       color: var(--fg-sub);
-      opacity: 0.85;
-      max-width: 480px;
-      margin-top: 12px;
+      line-height: 1.75;
+      max-width: 520px;
+      margin-top: 20px;
     }
-    .hero-cta {
-      margin-top: 28px;
+    .cta-row {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
       justify-content: center;
+      margin-top: 36px;
     }
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent-blue);
+      color: var(--fg);
+      border-radius: 999px;
+      padding: 14px 32px;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      box-shadow: 0 0 24px rgba(26,107,255,0.4);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--accent-blue-lt);
+      box-shadow: 0 0 32px rgba(26,107,255,0.6);
+    }
+    .btn-secondary {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 999px;
+      color: var(--fg);
+      font-size: 16px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 64px;
+    }
+    .stat {
+      padding: 20px 32px;
+      text-align: center;
+      min-width: 140px;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--fg-sub);
+      margin-top: 4px;
+    }
+    .scroll-indicator {
+      margin-top: 48px;
+      padding-bottom: 32px;
+      cursor: pointer;
+      color: var(--fg-sub);
+      opacity: 0.4;
+      animation: bounce 2s ease-in-out infinite;
+      transition: opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .scroll-indicator:hover { opacity: 0.7; }
 
-    /* Marquee */
-    .marquee-section { padding-bottom: 40px; flex-shrink: 0; }
-    .marquee-inner {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
+    /* ═════════════════════════════ 2. PROBLEMA ════════ */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .problem-card {
+      padding: 32px;
+      overflow: hidden;
+      border-left: 2px solid rgba(26,107,255,0.4);
+    }
+    .problem-icon {
+      width: 32px;
+      height: 32px;
+      color: var(--accent-blue);
+      margin-bottom: 16px;
+    }
+    .problem-card h3 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .problem-card p { font-size: 14px; color: var(--fg-sub); line-height: 1.65; }
+
+    /* ═════════════════════════════ 3. SOLUCIÓN ════════ */
+    .solution-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 48px;
-      padding: 0 24px;
-    }
-    .marquee-label {
-      color: rgba(240,239,240,0.45);
-      font-size: 14px;
-      line-height: 1.5;
-      white-space: nowrap;
-      min-width: fit-content;
-    }
-    .marquee-overflow { overflow: hidden; flex: 1; }
-    @keyframes marquee-scroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-    .marquee-track {
-      display: flex;
       align-items: center;
-      gap: 64px;
-      animation: marquee-scroll 22s linear infinite;
-      width: max-content;
+      margin-top: 48px;
     }
-    .marquee-item {
+    .solution-text h2 {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3.8vw, 44px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .solution-text p {
+      font-size: 16px;
+      color: var(--fg-sub);
+      line-height: 1.75;
+      margin-bottom: 24px;
+    }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      color: var(--fg-sub);
+    }
+    .check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check svg { width: 10px; height: 10px; }
+
+    /* Chat mockup */
+    .chat-mockup { padding: 0; overflow: hidden; border-radius: 20px; max-width: 380px; }
+    .chat-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-shrink: 0;
-      white-space: nowrap;
     }
-    .marquee-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(26,107,255,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--fg);
+      color: var(--accent-blue-lt);
       flex-shrink: 0;
     }
-    .marquee-name { font-size: 14px; font-weight: 600; color: var(--fg); }
-
-    /* ════════════════════════════════════════════════════════════ */
-    /*  2. PROBLEMA                                                 */
-    /* ════════════════════════════════════════════════════════════ */
-    .pain-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-top: 32px;
+    .chat-name { font-weight: 600; font-size: 14px; color: var(--fg); }
+    .agent-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0,200,150,0.15);
+      color: var(--accent-green);
+      font-weight: 700;
+      margin-top: 2px;
     }
-    .pain-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
+    .chat-messages { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .chat-msg { font-size: 13px; line-height: 1.55; padding: 10px 14px; border-radius: 12px; max-width: 88%; }
+    .msg-user  { background: rgba(255,255,255,0.06); align-self: flex-start; color: var(--fg-sub); }
+    .msg-agent { background: rgba(26,107,255,0.15); align-self: flex-end; color: var(--fg); }
+    .msg-ia-badge {
+      font-size: 9px;
+      font-weight: 700;
+      background: var(--accent-blue);
+      color: #fff;
+      border-radius: 4px;
+      padding: 1px 5px;
+      margin-right: 6px;
+      vertical-align: middle;
     }
-    .pain-icon { font-size: 26px; flex-shrink: 0; margin-top: 2px; }
-    .pain-card h3 { color: var(--fg); }
-    .pain-card p { font-size: 14px; color: var(--fg-sub); margin: 0; }
+    .msg-time { font-size: 10px; color: var(--fg-sub); opacity: 0.5; display: block; margin-top: 4px; text-align: right; }
 
-    /* ════════════════════════════════════════════════════════════ */
-    /*  4. CÓMO FUNCIONA                                            */
-    /* ════════════════════════════════════════════════════════════ */
+    /* ═══════════════════════ 4. CÓMO FUNCIONA ═════════ */
     .steps-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 20px;
-      margin-top: 32px;
+      margin-top: 64px;
+      position: relative;
     }
-    .step-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 22px;
-      text-align: center;
+    .step-card { padding: 32px; text-align: center; }
+    .step-number {
+      font-family: var(--font-display);
+      font-size: 64px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      opacity: 0.2;
+      line-height: 1;
+      margin-bottom: 16px;
     }
-    .step-num {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--accent-blue);
+    .step-card h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
       color: var(--fg);
+      margin-bottom: 10px;
+    }
+    .step-card p { font-size: 14px; color: var(--fg-sub); line-height: 1.65; }
+
+    /* ═══════════════════════════ 5. DASHBOARD ═════════ */
+    .dash-wrap {
+      max-width: 860px;
+      margin: 48px auto 0;
+      padding: 28px;
+    }
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .dash-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--fg); }
+    .live-badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
       font-weight: 700;
-      font-size: 16px;
-      margin: 0 auto 14px;
+      color: var(--accent-green);
+      letter-spacing: 0.08em;
     }
-    .step-card p { font-size: 14px; color: var(--fg-sub); margin: 0; }
-
-    /* ════════════════════════════════════════════════════════════ */
-    /*  5. DASHBOARD                                                */
-    /* ════════════════════════════════════════════════════════════ */
-    .dashboard-wrap {
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse 2s ease-in-out infinite;
     }
-    .dash-topbar {
-      background: rgba(0,0,0,0.3);
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-    .dash-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dash-dot.red    { background: #ef4444; }
-    .dash-dot.yellow { background: #f59e0b; }
-    .dash-dot.dgreen { background: var(--accent-green); }
-    .dash-title { color: var(--fg-sub); font-size: 13px; margin-left: 6px; }
-    .dash-body { padding: 20px; }
     .dash-kpis {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 14px;
+      margin-bottom: 24px;
     }
-    .dash-kpi {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 10px;
-      text-align: center;
-    }
-    .dash-kpi .dv {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--fg);
-      font-family: var(--font-display);
-    }
-    .dash-kpi .dv.green { color: var(--accent-green); }
-    .dash-kpi .dl { font-size: 11px; color: var(--fg-sub); margin-top: 2px; }
+    .dash-kpi { padding: 16px; border-radius: 10px; }
+    .dash-kpi-label { font-size: 11px; color: var(--fg-sub); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .dash-kpi-value { font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1; }
+    .dash-kpi-delta { font-size: 11px; color: var(--accent-green); margin-top: 4px; }
+    .progress-bar-wrap { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-top: 8px; }
+    .progress-bar { height: 100%; border-radius: 2px; background: var(--accent-blue); }
     .dash-section-title {
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .07em;
+      letter-spacing: 0.08em;
       color: var(--fg-sub);
       opacity: 0.5;
-      margin: 0 0 10px;
+      margin-bottom: 12px;
     }
-    .dash-chart {
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
-      height: 72px;
-      margin-bottom: 20px;
-    }
-    .dash-bar-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      height: 100%;
-      justify-content: flex-end;
-    }
-    .dash-bar { width: 100%; border-radius: 3px 3px 0 0; background: rgba(255,255,255,0.06); }
-    .dash-bar.active { background: var(--accent-green); }
-    .dash-bar-label { font-size: 10px; color: var(--fg-sub); opacity: 0.5; }
-    .dash-bar-label.active { color: var(--accent-green); opacity: 1; font-weight: 700; }
-    .dash-row-list { display: flex; flex-direction: column; gap: 6px; }
-    .dash-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255,255,255,0.03);
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 12px;
-      color: var(--fg-sub);
-    }
-    .dash-tag {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
-    .tag-green { background: rgba(0,200,150,0.15); color: var(--accent-green); }
-    .tag-blue  { background: rgba(26,107,255,0.15); color: var(--accent-blue-lt); }
-
-    /* ════════════════════════════════════════════════════════════ */
-    /*  6. BENEFICIOS                                               */
-    /* ════════════════════════════════════════════════════════════ */
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      margin-top: 32px;
-    }
-    .kpi {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 16px;
-      text-align: center;
-    }
-    .kpi .value {
-      font-family: var(--font-display);
-      font-size: 34px;
-      font-weight: 700;
-      color: var(--accent-green);
-      line-height: 1.1;
-    }
-    .kpi .label { font-size: 14px; color: var(--fg-sub); margin-top: 6px; }
-
-    /* ════════════════════════════════════════════════════════════ */
-    /*  7. PRUEBA SOCIAL                                            */
-    /* ════════════════════════════════════════════════════════════ */
-    .quote {
-      font-style: italic;
-      color: var(--fg-sub);
-      font-size: 15px;
-      line-height: 1.7;
-      margin-bottom: 14px;
-    }
-    .author { font-weight: 600; color: var(--fg); font-size: 14px; }
-    .author-role { color: var(--fg-sub); font-size: 13px; }
-
-    /* ════════════════════════════════════════════════════════════ */
-    /*  8. FORMULARIO                                               */
-    /* ════════════════════════════════════════════════════════════ */
-    .form-wrap { max-width: 560px; margin: 0 auto; }
-    .contact-form { display: grid; gap: 14px; margin-top: 24px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .contact-form input,
-    .contact-form select {
+    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 80px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .bar {
       width: 100%;
-      padding: 14px 16px;
-      background: var(--bg-card);
+      border-radius: 4px 4px 0 0;
+      background: var(--accent-blue);
+      opacity: 0.6;
+      transition: opacity 0.2s, background 0.2s;
+      cursor: default;
+    }
+    .bar:hover { opacity: 1; background: var(--accent-blue-lt); }
+    .bar-label { font-size: 10px; color: var(--fg-sub); opacity: 0.5; }
+    .dash-note { font-size: 12px; color: var(--fg-sub); opacity: 0.5; text-align: center; margin-top: 16px; }
+
+    /* ═══════════════════════ 6. TESTIMONIOS ═══════════ */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .testimonial { padding: 32px; }
+    .quote-deco {
+      font-family: var(--font-display);
+      font-size: 64px;
+      line-height: 1;
+      color: var(--accent-blue);
+      opacity: 0.3;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .quote-text { font-size: 15px; color: var(--fg-sub); line-height: 1.7; font-style: italic; margin-bottom: 20px; }
+    .quote-author { display: flex; align-items: center; gap: 12px; }
+    .quote-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(26,107,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent-blue-lt);
+      flex-shrink: 0;
+    }
+    .quote-name { font-size: 14px; font-weight: 600; color: var(--fg); }
+    .quote-role { font-size: 13px; color: var(--fg-sub); }
+
+    /* ═══════════════════════════════ 7. DEMO ══════════ */
+    .form-wrap {
+      max-width: 520px;
+      margin: 40px auto 0;
+      padding: 40px;
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: var(--fg-sub);
+      margin-bottom: 6px;
+    }
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 15px;
+      border-radius: 8px;
       color: var(--fg);
+      font-size: 15px;
       font-family: var(--font-body);
       outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
       appearance: none;
     }
-    .contact-form input::placeholder { color: var(--fg-sub); opacity: 0.5; }
-    .contact-form select {
+    .form-input::placeholder { color: var(--fg-sub); opacity: 0.4; }
+    .form-select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23b8c4d4'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 14px center;
-      background-size: 18px;
-      padding-right: 40px;
+      background-size: 16px;
+      padding-right: 38px;
       cursor: pointer;
     }
-    .contact-form select option { background: var(--bg-card); color: var(--fg); }
-    .contact-form input:focus,
-    .contact-form select:focus {
+    .form-select option { background: #0d2444; color: var(--fg); }
+    .form-input:focus,
+    .form-select:focus {
       border-color: var(--accent-blue);
       box-shadow: 0 0 0 3px rgba(26,107,255,0.15);
     }
-    .form-submit {
+    .form-input.invalid,
+    .form-select.invalid {
+      border-color: rgba(248,113,113,0.6);
+      box-shadow: 0 0 0 3px rgba(248,113,113,0.12);
+    }
+    .btn-submit {
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       border: none;
       border-radius: 999px;
       background: var(--accent-blue);
       color: var(--fg);
-      font-weight: 700;
-      font-size: 16px;
-      font-family: var(--font-body);
-      cursor: pointer;
-      transition: background .2s;
-    }
-    .form-submit:hover { background: var(--accent-blue-lt); }
-    .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-    .form-status {
-      display: none;
-      margin-top: 14px;
-      padding: 12px 16px;
-      border-radius: var(--radius);
-      font-size: 14px;
       font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 0 24px rgba(26,107,255,0.4);
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-top: 8px;
     }
-    .form-status.success {
-      display: block;
-      color: var(--accent-green);
-      background: rgba(0,200,150,0.1);
-      border: 1px solid rgba(0,200,150,0.3);
-    }
-    .form-status.error {
-      display: block;
-      color: #f87171;
-      background: rgba(248,113,113,0.1);
-      border: 1px solid rgba(248,113,113,0.3);
-    }
-    .form-note {
-      font-size: 13px;
-      color: var(--fg-sub);
-      opacity: 0.6;
-      text-align: center;
-      margin-top: 12px;
+    .btn-submit:hover { background: var(--accent-blue-lt); box-shadow: 0 0 32px rgba(26,107,255,0.6); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+    .form-legal { font-size: 12px; color: var(--fg-sub); opacity: 0.6; text-align: center; margin-top: 16px; }
+    .form-status { display: none; padding: 14px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-top: 16px; }
+    .form-status.success { display: block; background: rgba(0,200,150,0.12); border: 1px solid rgba(0,200,150,0.3); color: var(--accent-green); }
+    .form-status.error   { display: block; background: rgba(248,113,113,0.10); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
     }
 
-    /* ════════════════════════════════════════════════════════════ */
-    /*  FOOTER                                                      */
-    /* ════════════════════════════════════════════════════════════ */
+    /* ══════════════════════════════ FOOTER ════════════ */
     footer {
-      padding: 28px 0;
-      background: var(--bg-deep);
+      padding: 40px 32px;
+      background: rgba(2,3,10,0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-top: 1px solid var(--border);
-      color: var(--fg-sub);
-      font-size: 14px;
     }
     .footer-inner {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
       justify-content: space-between;
       align-items: center;
+      gap: 20px;
+      max-width: 1120px;
+      margin: 0 auto;
     }
-    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
-    footer a { color: var(--fg-sub); transition: color .2s; }
-    footer a:hover { color: var(--fg); }
+    .footer-brand { font-size: 14px; color: var(--fg-sub); }
+    .footer-links { display: flex; gap: 20px; align-items: center; }
+    .footer-links a {
+      color: var(--fg-sub);
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .footer-links a:hover { color: var(--fg); }
+    .footer-links svg { width: 18px; height: 18px; }
+    .footer-made { font-size: 13px; color: var(--fg-sub); }
 
-    /* ── RESPONSIVE ──────────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .grid-2, .grid-3, .pain-grid, .steps-grid, .kpis, .form-row, .dash-kpis {
-        grid-template-columns: 1fr;
-      }
-      .kpis { grid-template-columns: repeat(2, 1fr); }
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 960px) {
+      .problem-grid, .steps-grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+      .solution-grid { grid-template-columns: 1fr; }
+      .chat-mockup { max-width: 100%; }
     }
     @media (max-width: 768px) {
       .nav-links { display: none; }
-      .navbar { padding: 16px 20px; }
-      .headline { font-size: clamp(44px, 13vw, 72px); white-space: normal; }
-      .marquee-inner { gap: 24px; }
-      section { padding: 56px 0; }
-      .blur-overlay { width: 100%; height: 60%; }
+      .navbar { padding: 14px 20px; }
+      .section { padding: 72px 0; }
+      .container { padding: 0 20px; }
+      .hero-inner { padding: 40px 20px 0; }
+      .stats-row { gap: 12px; }
+      .stat { padding: 16px 20px; min-width: 110px; }
+      .stat-value { font-size: 24px; }
+      .cta-row { flex-direction: column; align-items: center; }
+      .form-wrap { padding: 28px 20px; }
+      footer { padding: 32px 20px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
     }
-    @media (max-width: 500px) {
-      .kpis { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 480px) {
+      .headline { font-size: clamp(32px, 10vw, 48px); }
       .dash-kpis { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════ 1. HERO ════ -->
-<section class="hero" id="inicio">
-  <div class="hero-video-clip">
-    <video
-      id="bgVideo"
-      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_065045_c44942da-53c6-4804-b734-f9e07fc22e08.mp4"
-      muted
-      playsinline
-      preload="auto"
-    ></video>
-  </div>
-  <div class="blur-overlay" aria-hidden="true"></div>
+<!-- ── WALLPAPER ─────────────────────────────────────── -->
+<canvas id="gl"></canvas>
+<div class="overlay-dark"></div>
 
-  <div class="hero-inner">
-    <nav class="navbar">
+<!-- ── ALL CONTENT ───────────────────────────────────── -->
+<div class="content-stack">
+
+  <!-- ════════════════════════ 1. HERO ═══════════════ -->
+  <section class="hero" id="inicio">
+
+    <nav class="navbar glass" id="navbar">
       <a class="brand" href="#">Escal IA</a>
       <ul class="nav-links">
         <li><a href="#solucion">Agente IA</a></li>
         <li><a href="#dashboard">Dashboard</a></li>
         <li><a href="#testimonios">Casos</a></li>
-        <li><a href="#demo">Demo</a></li>
+        <li><a href="#demo">Planes</a></li>
       </ul>
-      <a class="nav-cta liquid-glass" href="#demo">Quiero una demo</a>
+      <a class="nav-btn glass" href="#demo">Quiero una demo</a>
     </nav>
-    <div class="nav-divider"></div>
 
-    <div class="hero-content">
-      <h1 class="headline">Tu agente de <span class="gradient-ia">IA</span></h1>
-      <p class="hero-subtitle">
-        Responde consultas, convierte leads y cierra ventas por WhatsApp.<br>
-        Vos mirás el dashboard. La IA trabaja.
+    <div class="hero-inner">
+      <div class="eyebrow-badge glass fade-in">
+        <span class="pulse-dot"></span>
+        Agente de IA para WhatsApp · Disponible ahora
+      </div>
+
+      <h1 class="headline fade-in" style="transition-delay:0.08s;">
+        Tu agente de IA trabaja.<br>
+        <span class="gradient-text">Vos cerrás ventas.</span>
+      </h1>
+
+      <p class="hero-subtitle fade-in" style="transition-delay:0.16s;">
+        Responde consultas, califica leads y hace seguimiento por WhatsApp, 24/7.<br>
+        Vos mirás el dashboard. El agente trabaja.
       </p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="#demo">Agendá tu demo gratis</a>
-        <a class="btn btn-outline liquid-glass" href="#solucion">Cómo funciona</a>
+
+      <div class="cta-row fade-in" style="transition-delay:0.24s;">
+        <a class="btn-primary" href="#demo">Agendá tu demo gratis</a>
+        <a class="btn-secondary glass" href="#solucion">Ver cómo funciona →</a>
+      </div>
+
+      <div class="stats-row fade-in" style="transition-delay:0.32s;">
+        <div class="stat glass">
+          <div class="stat-value" style="color:var(--accent-green);" data-counter="50" data-prefix="-" data-suffix="%">-50%</div>
+          <div class="stat-label">Carga operativa</div>
+        </div>
+        <div class="stat glass">
+          <div class="stat-value" style="color:var(--accent-blue-lt);" data-counter="30" data-prefix="+" data-suffix="%">+30%</div>
+          <div class="stat-label">Conversiones</div>
+        </div>
+        <div class="stat glass">
+          <div class="stat-value" style="color:var(--accent-green);" data-counter="3" data-prefix="&lt;&nbsp;" data-suffix=" seg">&lt;&nbsp;3 seg</div>
+          <div class="stat-label">Tiempo de respuesta</div>
+        </div>
+      </div>
+
+      <div class="scroll-indicator fade-in" style="transition-delay:0.4s;" id="scrollDown">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </div>
     </div>
 
-    <div class="marquee-section">
-      <div class="marquee-inner">
-        <div class="marquee-label">Empresas que ya confían<br>en Escal IA</div>
-        <div class="marquee-overflow">
-          <div class="marquee-track" id="marqueeTrack"></div>
+  </section>
+
+  <!-- ══════════════════════ 2. PROBLEMA ═════════════ -->
+  <section class="section" id="problema">
+    <div class="container">
+      <div class="eyebrow fade-in">¿Esto te suena familiar?</div>
+      <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(28px,4.5vw,52px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);max-width:600px;line-height:1.15;transition-delay:0.08s;">
+        Tu WhatsApp no para.<br>Tu equipo, sí.
+      </h2>
+      <div class="problem-grid">
+        <div class="problem-card glass fade-in" style="transition-delay:0.1s;">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <h3>Respondés lo mismo 40 veces por día</h3>
+          <p>Precios, disponibilidad, entregas. Cada día, desde cero, mientras el negocio necesita tu atención en otro lado.</p>
+        </div>
+        <div class="problem-card glass fade-in" style="transition-delay:0.18s;">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <h3>Contratás gente solo para el WhatsApp</h3>
+          <p>Y aun así no alcanza cuando se acumulan los mensajes. Sueldo, cargas, vacaciones — y los fines de semana sin cubrir.</p>
+        </div>
+        <div class="problem-card glass fade-in" style="transition-delay:0.26s;">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <h3>Perdés ventas por llegar tarde</h3>
+          <p>El cliente pregunta, vos tardás dos horas, el cliente compra en otro lado. A veces te avisan. La mayoría, no.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══════════════════════════════════════ 2. PROBLEMA ═ -->
-<section id="problema">
-  <div class="container">
-    <div class="eyebrow">El problema</div>
-    <h2>¿Esto te suena familiar?</h2>
-    <p class="lead">No sos el único. Es lo que nos cuenta casi todo dueño de PyME que llega hasta acá.</p>
-    <div class="pain-grid">
-      <div class="pain-card">
-        <div class="pain-icon">😩</div>
-        <div>
-          <h3>Son las 11 de la noche y hay 40 mensajes sin responder</h3>
-          <p>Cada uno es un potencial cliente. Mañana ya van a haber comprado en otro lado.</p>
+  <!-- ══════════════════════ 3. SOLUCIÓN ═════════════ -->
+  <section class="section" id="solucion">
+    <div class="container">
+      <div class="solution-grid">
+        <div class="solution-text">
+          <div class="eyebrow fade-in">La solución</div>
+          <h2 class="fade-in" style="transition-delay:0.08s;">Un agente que trabaja por vos, 24/7</h2>
+          <p class="fade-in" style="transition-delay:0.16s;">
+            Configurás una vez. El agente atiende, clasifica, responde y hace seguimiento. Sin errores, sin ausencias, sin costo de hora extra.
+          </p>
+          <ul class="feature-list fade-in" style="transition-delay:0.24s;">
+            <li>
+              <span class="check">
+                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
+              </span>
+              Respuestas instantáneas a consultas frecuentes
+            </li>
+            <li>
+              <span class="check">
+                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
+              </span>
+              Clasificación automática por tipo de consulta
+            </li>
+            <li>
+              <span class="check">
+                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
+              </span>
+              Seguimiento programado de leads sin perder ninguno
+            </li>
+            <li>
+              <span class="check">
+                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
+              </span>
+              Integración directa con tu WhatsApp Business
+            </li>
+          </ul>
         </div>
-      </div>
-      <div class="pain-card">
-        <div class="pain-icon">💸</div>
-        <div>
-          <h3>Contrataste a alguien solo para atender el WhatsApp — y aun así no alcanza</h3>
-          <p>Sueldo, cargas sociales, vacaciones… y los fines de semana siguen sin cubrirse.</p>
-        </div>
-      </div>
-      <div class="pain-card">
-        <div class="pain-icon">📉</div>
-        <div>
-          <h3>Perdiste una venta porque tardaste dos horas en responder</h3>
-          <p>El cliente preguntó, esperó, y compró en la competencia. A veces te avisan. La mayoría no.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════════ 3. SOLUCIÓN ═ -->
-<section id="solucion" class="section-alt">
-  <div class="container">
-    <div class="grid-2" style="align-items:center; gap:40px;">
-      <div>
-        <div class="eyebrow">La solución</div>
-        <h2>El agente lee, entiende y responde. Vos revisás cuando querés.</h2>
-        <p class="lead" style="margin-top:12px;">
-          No es un bot de respuestas fijas. Es un agente entrenado con la información real de tu negocio: precios, horarios, preguntas frecuentes. Responde como lo haría alguien de tu equipo.
-        </p>
-        <ul class="feature-list">
-          <li>Responde consultas de precios, horarios y disponibilidad al instante</li>
-          <li>Agenda citas y confirma turnos directo desde el chat</li>
-          <li>Detecta oportunidades de venta y capta los datos del lead</li>
-          <li>Deriva al humano solo cuando la consulta realmente lo requiere</li>
-          <li>Opera 24/7, incluso cuando tu equipo no está disponible</li>
-          <li>Registra cada conversación — historial completo, siempre accesible</li>
-        </ul>
-      </div>
-      <!-- Chat mockup -->
-      <div>
-        <div class="card" style="padding:0; overflow:hidden;">
-          <div style="background:#075e54; padding:14px 16px; display:flex; align-items:center; gap:10px;">
-            <div style="width:38px;height:38px;border-radius:50%;background:var(--accent-green);display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
+        <div class="chat-mockup glass fade-in" style="transition-delay:0.2s;">
+          <div class="chat-header">
+            <div class="chat-avatar">WA</div>
             <div>
-              <div style="color:#fff;font-weight:700;font-size:14px;">Agente Escal IA</div>
-              <div style="color:#25d366;font-size:12px;">● En línea ahora</div>
+              <div class="chat-name">WhatsApp Business</div>
+              <span class="agent-badge">Agente IA activo</span>
             </div>
           </div>
-          <div style="background:#0a1810;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:220px;">
-            <div style="align-self:flex-start;background:#162a1a;border-radius:0 10px 10px 10px;padding:10px 14px;max-width:85%;font-size:14px;color:var(--fg);">
-              Hola! Quisiera saber el precio del servicio mensual y si tienen disponibilidad esta semana
+          <div class="chat-messages">
+            <div class="chat-msg msg-user">Hola, cuánto sale el plan básico?</div>
+            <div class="chat-msg msg-agent">
+              <span class="msg-ia-badge">IA</span>¡Hola! El plan Start arranca en USD 499. Incluye diagnóstico, prototipo funcional e integración básica. ¿Querés que te cuente más sobre lo que incluye?
+              <span class="msg-time">hace 2 seg</span>
             </div>
-            <div style="align-self:flex-end;background:#1a3a1e;border-radius:10px 0 10px 10px;padding:10px 14px;max-width:85%;font-size:14px;color:var(--fg);">
-              ¡Hola! El plan mensual arranca en $45.000. Tenemos disponibilidad el martes y el jueves. ¿Te agendo una consulta? 😊
-              <div style="font-size:11px;color:var(--accent-green);text-align:right;margin-top:4px;">✓✓ 3 seg</div>
-            </div>
-            <div style="align-self:flex-start;background:#162a1a;border-radius:0 10px 10px 10px;padding:10px 14px;max-width:85%;font-size:14px;color:var(--fg);">
-              Perfecto, el martes me viene bien
-            </div>
-            <div style="align-self:flex-end;background:#1a3a1e;border-radius:10px 0 10px 10px;padding:10px 14px;max-width:85%;font-size:14px;color:var(--fg);">
-              Listo! Turno confirmado para el martes a las 10hs. Te llega un recordatorio el día anterior 👋
-              <div style="font-size:11px;color:var(--accent-green);text-align:right;margin-top:4px;">✓✓ 1 seg</div>
+            <div class="chat-msg msg-user">Tiene período de prueba?</div>
+            <div class="chat-msg msg-agent">
+              <span class="msg-ia-badge">IA</span>Sí, hacemos un MVP en 2 semanas para que lo pruebes con clientes reales antes de escalar. ¿Agendamos una demo para mostrarte cómo funciona con tu negocio?
+              <span class="msg-time">hace 1 seg</span>
             </div>
           </div>
         </div>
-        <p style="text-align:center;font-size:13px;color:var(--fg-sub);margin-top:10px;opacity:0.5;">Esto pasó mientras vos dormías.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ════════════════════════════════ 4. CÓMO FUNCIONA ══ -->
-<section id="como-funciona">
-  <div class="container section-center">
-    <div class="eyebrow">El proceso</div>
-    <h2>Tres pasos. Una semana. Tu negocio responde solo.</h2>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">1</div>
-        <h3>Conectamos tu WhatsApp</h3>
-        <p>Sin cambiar tu número ni tu app. La integración tarda menos de un día y no interrumpe tu operación.</p>
+  <!-- ═══════════════════ 4. CÓMO FUNCIONA ═══════════ -->
+  <section class="section" id="como-funciona">
+    <div class="container">
+      <div style="text-align:center; max-width:600px; margin:0 auto;">
+        <div class="eyebrow fade-in">Simple de implementar</div>
+        <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(26px,4vw,44px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);transition-delay:0.08s;">
+          En 3 pasos, tu IA está trabajando
+        </h2>
       </div>
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <h3>Entrenamos el agente con tu negocio</h3>
-        <p>Tus preguntas frecuentes, precios y forma de comunicarte. El agente aprende a responder como vos querés.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <h3>Empieza a responder solo</h3>
-        <p>Desde el primer día tus clientes reciben respuestas inmediatas. Vos ajustás lo que querés desde el panel.</p>
+      <div class="steps-grid">
+        <div class="step-card glass fade-in" style="transition-delay:0.1s;">
+          <div class="step-number">01</div>
+          <h3>Diagnóstico</h3>
+          <p>Entendemos tu negocio y definimos las respuestas clave del agente. Una conversación que ahorra meses.</p>
+        </div>
+        <div class="step-card glass fade-in" style="transition-delay:0.2s;">
+          <div class="step-number">02</div>
+          <h3>Configuración</h3>
+          <p>Activamos tu agente en WhatsApp Business en menos de una semana. Sin cambiar tu número ni tu app.</p>
+        </div>
+        <div class="step-card glass fade-in" style="transition-delay:0.3s;">
+          <div class="step-number">03</div>
+          <h3>Resultados</h3>
+          <p>Empezás a ver métricas desde el día uno en tu dashboard en tiempo real. Ajustás, escalás, crecés.</p>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ════════════════════════════════════ 5. DASHBOARD ══ -->
-<section id="dashboard" class="section-alt">
-  <div class="container">
-    <div class="grid-2" style="align-items:center; gap:40px;">
-      <div>
-        <div class="eyebrow">Panel de control</div>
-        <h2>Sabés exactamente qué está haciendo tu agente, en todo momento.</h2>
-        <p class="lead" style="margin-top:12px;">
-          No es una caja negra. Un dashboard en tiempo real con cada conversación, cuántos leads captó, qué convirtió y cómo viene la semana.
+  <!-- ═══════════════════════ 5. DASHBOARD ═══════════ -->
+  <section class="section" id="dashboard">
+    <div class="container">
+      <div style="text-align:center; max-width:560px; margin:0 auto;">
+        <div class="eyebrow fade-in">Control total</div>
+        <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(26px,4vw,44px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);transition-delay:0.08s;">
+          Sabés exactamente qué está haciendo tu agente
+        </h2>
+        <p class="fade-in" style="color:var(--fg-sub);font-size:16px;line-height:1.7;margin-top:12px;transition-delay:0.16s;">
+          Un dashboard en tiempo real con las métricas que importan. Sin cajas negras, sin suposiciones.
         </p>
-        <ul class="feature-list" style="margin-top:16px;">
-          <li>Consultas del día: recibidas, respondidas, derivadas</li>
-          <li>Conversiones y leads captados en tiempo real</li>
-          <li>Tendencia semanal con comparativa</li>
-          <li>Historial completo de cada conversación</li>
-          <li>Alertas cuando el agente no sabe responder algo</li>
-        </ul>
       </div>
-      <div class="dashboard-wrap">
-        <div class="dash-topbar">
-          <div class="dash-dot red"></div>
-          <div class="dash-dot yellow"></div>
-          <div class="dash-dot dgreen"></div>
-          <div class="dash-title">Panel — Tu Negocio</div>
+
+      <div class="dash-wrap glass fade-in" style="transition-delay:0.2s;">
+        <div class="dash-header">
+          <span class="dash-title">Panel de Control · Agente WhatsApp</span>
+          <span class="live-badge"><span class="live-dot"></span>EN VIVO</span>
         </div>
-        <div class="dash-body">
-          <div class="dash-kpis">
-            <div class="dash-kpi"><div class="dv">147</div><div class="dl">Consultas hoy</div></div>
-            <div class="dash-kpi"><div class="dv green">139</div><div class="dl">Respondidas</div></div>
-            <div class="dash-kpi"><div class="dv green">23</div><div class="dl">Leads captados</div></div>
-            <div class="dash-kpi"><div class="dv">8</div><div class="dl">Turnos agendados</div></div>
+
+        <div class="dash-kpis">
+          <div class="dash-kpi glass">
+            <div class="dash-kpi-label">Consultas hoy</div>
+            <div class="dash-kpi-value" style="color:var(--fg);">147</div>
+            <div class="dash-kpi-delta">+12% vs ayer</div>
           </div>
-          <div class="dash-section-title">Consultas — últimos 7 días</div>
-          <div class="dash-chart">
-            <div class="dash-bar-wrap"><div class="dash-bar" style="height:45%"></div><div class="dash-bar-label">L</div></div>
-            <div class="dash-bar-wrap"><div class="dash-bar" style="height:60%"></div><div class="dash-bar-label">M</div></div>
-            <div class="dash-bar-wrap"><div class="dash-bar" style="height:50%"></div><div class="dash-bar-label">X</div></div>
-            <div class="dash-bar-wrap"><div class="dash-bar" style="height:75%"></div><div class="dash-bar-label">J</div></div>
-            <div class="dash-bar-wrap"><div class="dash-bar" style="height:65%"></div><div class="dash-bar-label">V</div></div>
-            <div class="dash-bar-wrap"><div class="dash-bar" style="height:30%"></div><div class="dash-bar-label">S</div></div>
-            <div class="dash-bar-wrap"><div class="dash-bar active" style="height:95%"></div><div class="dash-bar-label active">H</div></div>
+          <div class="dash-kpi glass">
+            <div class="dash-kpi-label">Tasa de conversión</div>
+            <div class="dash-kpi-value" style="color:var(--accent-blue-lt);">34%</div>
+            <div class="progress-bar-wrap"><div class="progress-bar" style="width:34%;"></div></div>
           </div>
-          <div class="dash-section-title">Últimas conversaciones</div>
-          <div class="dash-row-list">
-            <div class="dash-row"><span>+54 9 11 ●●●● 4821 — precio mensual</span><span class="dash-tag tag-green">Respondida</span></div>
-            <div class="dash-row"><span>+54 9 351 ●●●● 9034 — turno martes</span><span class="dash-tag tag-green">Agendado</span></div>
-            <div class="dash-row"><span>+54 9 11 ●●●● 2267 — reclamo factura</span><span class="dash-tag tag-blue">Derivada</span></div>
+          <div class="dash-kpi glass">
+            <div class="dash-kpi-label">Ventas cerradas</div>
+            <div class="dash-kpi-value" style="color:var(--accent-green);">23</div>
+            <div class="dash-kpi-delta">~$480K en valor</div>
+          </div>
+          <div class="dash-kpi glass">
+            <div class="dash-kpi-label">Tiempo de respuesta</div>
+            <div class="dash-kpi-value" style="color:var(--accent-blue-lt);">&lt;&nbsp;3s</div>
+            <div class="dash-kpi-delta">promedio del día</div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ══════════════════════════════════════ 6. BENEFICIOS ═ -->
-<section id="beneficios">
-  <div class="container section-center">
-    <div class="eyebrow">Resultados reales</div>
-    <h2>Lo que cambia en tu negocio desde la primera semana</h2>
-    <div class="kpis">
-      <div class="kpi"><div class="value">-70%</div><div class="label">Mensajes sin responder en la primera semana</div></div>
-      <div class="kpi"><div class="value">&lt;5s</div><div class="label">Tiempo de respuesta (vs. 2–4 hs sin el agente)</div></div>
-      <div class="kpi"><div class="value">24/7</div><div class="label">Cobertura sin horas extra ni finde</div></div>
-      <div class="kpi"><div class="value">-50%</div><div class="label">Carga operativa en atención al cliente</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════ 7. PRUEBA SOCIAL ═ -->
-<section id="testimonios" class="section-alt">
-  <div class="container">
-    <div class="eyebrow">Prueba social</div>
-    <h2>Lo que dicen quienes ya dejaron de ahogarse en mensajes</h2>
-    <div class="grid-3" style="margin-top:32px;">
-      <div class="card">
-        <p class="quote">"Teníamos una chica contratada solo para responder WhatsApp y aun así quedaban mensajes sin responder los fines de semana. Desde que pusimos el agente, esa persona pasó a hacer cosas que realmente importan."</p>
-        <div class="author">Marcela G.</div>
-        <div class="author-role">Centro de estética, CABA</div>
-      </div>
-      <div class="card">
-        <p class="quote">"La primera semana el agente respondió 300 consultas. Yo respondí cero. Y no perdí ninguna venta — al revés, vendí más porque respondía en segundos cuando yo tardaba horas."</p>
-        <div class="author">Rodrigo S.</div>
-        <div class="author-role">Tienda online de indumentaria</div>
-      </div>
-      <div class="card">
-        <p class="quote">"Lo que más me gustó es que puedo ver todo desde el panel. Sé exactamente qué respondió el agente, cuándo, y si el cliente quedó conforme. No es un bot que hace lo que quiere."</p>
-        <div class="author">Valeria M.</div>
-        <div class="author-role">Academia de idiomas online</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════════════════════ 8. FORMULARIO ══════ -->
-<section id="demo">
-  <div class="container section-center">
-    <div class="eyebrow">Demo sin costo</div>
-    <h2>Probá el agente con tu negocio real</h2>
-    <p class="lead" style="margin:12px auto 0;">
-      Te mostramos cómo respondería el agente a las consultas que vos recibís todos los días. Sin compromiso, en 30 minutos.
-    </p>
-    <div class="form-wrap">
-      <form id="demoForm" class="contact-form" novalidate>
-        <div class="form-row">
-          <input type="text" name="nombre"       placeholder="Tu nombre"            required autocomplete="name" />
-          <input type="text" name="empresa"      placeholder="Tu empresa o negocio" required />
+        <div class="dash-section-title">Consultas — últimos 7 días</div>
+        <div class="bar-chart">
+          <div class="bar-col"><div class="bar" style="height:50%"></div><div class="bar-label">Lun</div></div>
+          <div class="bar-col"><div class="bar" style="height:70%"></div><div class="bar-label">Mar</div></div>
+          <div class="bar-col"><div class="bar" style="height:45%"></div><div class="bar-label">Mié</div></div>
+          <div class="bar-col"><div class="bar" style="height:90%"></div><div class="bar-label">Jue</div></div>
+          <div class="bar-col"><div class="bar" style="height:75%"></div><div class="bar-label">Vie</div></div>
+          <div class="bar-col"><div class="bar" style="height:60%"></div><div class="bar-label">Sáb</div></div>
+          <div class="bar-col"><div class="bar" style="height:85%"></div><div class="bar-label">Dom</div></div>
         </div>
-        <div class="form-row">
-          <input type="tel"  name="whatsapp"     placeholder="Tu WhatsApp (+54 9…)" required autocomplete="tel" />
-          <select name="mensajes_dia" required>
-            <option value="" disabled selected>Mensajes por día</option>
-            <option value="menos-de-20">Menos de 20</option>
-            <option value="20-50">Entre 20 y 50</option>
-            <option value="50-100">Entre 50 y 100</option>
-            <option value="mas-de-100">Más de 100</option>
-          </select>
-        </div>
-        <button type="submit" class="form-submit" id="submitBtn">Agendá tu demo gratis</button>
-        <div id="formStatus" class="form-status"></div>
-      </form>
-      <p class="form-note">Te contactamos por WhatsApp en menos de 24 horas. Sin spam, sin permanencia.</p>
+        <p class="dash-note">Las métricas varían según el rubro y volumen del negocio.</p>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══════════════════════════════════════════ FOOTER ══ -->
+  <!-- ═════════════════════ 6. TESTIMONIOS ═══════════ -->
+  <section class="section" id="testimonios">
+    <div class="container">
+      <div style="text-align:center;">
+        <div class="eyebrow fade-in">Lo que dicen quienes ya lo usan</div>
+        <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(26px,4vw,44px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);transition-delay:0.08s;">
+          Resultados reales, no promesas
+        </h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial glass fade-in" style="transition-delay:0.1s;">
+          <div class="quote-deco">"</div>
+          <p class="quote-text">Agendar por WhatsApp y tener todo automatizado nos ahorró horas cada semana. Antes respondíamos lo mismo 50 veces por día.</p>
+          <div class="quote-author">
+            <div class="quote-avatar">C</div>
+            <div>
+              <div class="quote-name">Clínica estética</div>
+              <div class="quote-role">Corrientes, Argentina</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial glass fade-in" style="transition-delay:0.2s;">
+          <div class="quote-deco">"</div>
+          <p class="quote-text">Antes pagábamos una persona solo para responder mensajes. Ahora el agente lo hace solo y mejor. Y los fines de semana también.</p>
+          <div class="quote-author">
+            <div class="quote-avatar">A</div>
+            <div>
+              <div class="quote-name">Academia online</div>
+              <div class="quote-role">Buenos Aires, Argentina</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial glass fade-in" style="transition-delay:0.3s;">
+          <div class="quote-deco">"</div>
+          <p class="quote-text">El dashboard nos muestra todo en tiempo real. Sabemos exactamente cuánto estamos convirtiendo — sin adivinar, sin esperar el fin de mes.</p>
+          <div class="quote-author">
+            <div class="quote-avatar">C</div>
+            <div>
+              <div class="quote-name">Consultora de marketing</div>
+              <div class="quote-role">Rosario, Argentina</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ 7. DEMO ════════════ -->
+  <section class="section" id="demo">
+    <div class="container">
+      <div style="text-align:center; max-width:560px; margin:0 auto;">
+        <div class="eyebrow fade-in">Empezá hoy</div>
+        <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(26px,4vw,44px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);transition-delay:0.08s;">
+          Agendá tu demo gratuita
+        </h2>
+        <p class="fade-in" style="color:var(--fg-sub);font-size:16px;line-height:1.7;margin-top:12px;transition-delay:0.16s;">
+          Te mostramos el agente funcionando con casos de tu rubro. Sin compromiso.
+        </p>
+      </div>
+
+      <div class="form-wrap glass fade-in" style="transition-delay:0.2s;">
+        <form id="demoForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="f-nombre">Nombre completo</label>
+            <input class="form-input" id="f-nombre" name="nombre" type="text" placeholder="Tu nombre" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-empresa">Empresa</label>
+            <input class="form-input" id="f-empresa" name="empresa" type="text" placeholder="Tu empresa o negocio" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-whatsapp">WhatsApp</label>
+            <input class="form-input" id="f-whatsapp" name="whatsapp" type="tel" placeholder="+54 9..." autocomplete="tel" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-rubro">Rubro</label>
+            <select class="form-select" id="f-rubro" name="rubro">
+              <option value="" disabled selected>Seleccioná tu rubro</option>
+              <option value="clinica">Clínica / Salud</option>
+              <option value="academia">Academia / Educación</option>
+              <option value="ecommerce">E-commerce</option>
+              <option value="consultora">Consultora</option>
+              <option value="inmobiliaria">Inmobiliaria</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-mensajes">Mensajes por día</label>
+            <select class="form-select" id="f-mensajes" name="mensajes_dia">
+              <option value="" disabled selected>¿Cuántos mensajes recibís?</option>
+              <option value="menos-de-50">Menos de 50</option>
+              <option value="50-200">Entre 50 y 200</option>
+              <option value="mas-de-200">Más de 200</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-submit" id="submitBtn">Agendá tu demo gratis</button>
+          <div id="formStatus" class="form-status"></div>
+        </form>
+        <p class="form-legal">Al enviarnos tus datos, te contactamos para analizar tu caso.</p>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /content-stack -->
+
+<!-- ══════════════════════════════════ FOOTER ══════════ -->
 <footer>
-  <div class="container footer-inner">
-    <div>© <span id="currentYear"></span> Escal IA – Data Solutions.</div>
-    <div class="footer-links">
-      <a href="https://www.linkedin.com/company/escal-ia" rel="noopener">LinkedIn</a>
-      <a href="https://www.instagram.com/escal.ia" rel="noopener">Instagram</a>
-      <a href="https://www.facebook.com/EscalaConIA" rel="noopener">Facebook</a>
-      <a href="https://wa.me/5493794260543" rel="noopener">WhatsApp</a>
-      <a href="#demo">Demo</a>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      Escal IA · Data Solutions<br>
+      <span style="opacity:0.5;">© <span id="yr"></span> Todos los derechos reservados.</span>
     </div>
+    <div class="footer-links">
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/company/escal-ia" rel="noopener" title="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/escal.ia" rel="noopener" title="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <!-- Facebook -->
+      <a href="https://www.facebook.com/EscalaConIA" rel="noopener" title="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <!-- WhatsApp -->
+      <a href="https://wa.me/5493794260543" rel="noopener" title="WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.96 9.96 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 0 1-4.079-1.118l-.29-.173-3.005.894.894-3.005-.173-.29A8 8 0 1 1 12 20z"/></svg>
+      </a>
+    </div>
+    <div class="footer-made">hecho en Argentina 🇦🇷</div>
   </div>
 </footer>
 
 <script>
-  document.getElementById('currentYear').textContent = new Date().getFullYear();
+/* ── 1. PARTICLE MESH WALLPAPER ─────────────────────── */
+(function () {
+  var canvas = document.getElementById('gl');
+  var ctx = canvas.getContext('2d');
+  var W, H, particles, RAF;
+  var mouse = { x: -9999, y: -9999 };
+  var N_DESKTOP = 75, N_MOBILE = 42;
+  var MAX_DIST = 160, MOUSE_R = 110;
 
-  /* ── VIDEO FADE LOOP ── */
-  (function () {
-    var video = document.getElementById('bgVideo');
-    var FADE_MS = 500;
-    var FADE_OUT_BEFORE_S = 0.5;
-    var fadeRAF = null;
-    var fadeOutScheduled = false;
+  function Particle() {
+    this.x  = Math.random() * W;
+    this.y  = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.r  = Math.random() * 1.4 + 0.7;
+    this.blue = Math.random() > 0.45;
+  }
 
-    function cancelFade() {
-      if (fadeRAF) { cancelAnimationFrame(fadeRAF); fadeRAF = null; }
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    var n = W < 768 ? N_MOBILE : N_DESKTOP;
+    if (!particles || particles.length !== n) {
+      particles = [];
+      for (var i = 0; i < n; i++) particles.push(new Particle());
+    }
+  }
+
+  function draw() {
+    RAF = requestAnimationFrame(draw);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#02030a';
+    ctx.fillRect(0, 0, W, H);
+
+    var len = particles.length;
+
+    for (var i = 0; i < len; i++) {
+      var p = particles[i];
+
+      /* mouse repulsion */
+      var mx = p.x - mouse.x, my = p.y - mouse.y;
+      var md = Math.sqrt(mx * mx + my * my);
+      if (md < MOUSE_R && md > 0) {
+        var force = ((MOUSE_R - md) / MOUSE_R) * 0.012;
+        p.vx += (mx / md) * force;
+        p.vy += (my / md) * force;
+      }
+
+      /* speed cap */
+      var spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (spd > 0.75) { p.vx *= 0.75 / spd; p.vy *= 0.75 / spd; }
+
+      p.x += p.vx; p.y += p.vy;
+
+      /* wrap */
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H + 10) p.y = -10;
+
+      /* connections */
+      for (var j = i + 1; j < len; j++) {
+        var q  = particles[j];
+        var dx = p.x - q.x, dy = p.y - q.y;
+        var d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < MAX_DIST) {
+          var alpha = (1 - d / MAX_DIST) * 0.22;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = 'rgba(76,201,255,' + alpha + ')';
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
+        }
+      }
     }
 
-    function animateFade(from, to, onDone) {
-      var t0 = performance.now();
-      function step(now) {
-        var t = Math.min((now - t0) / FADE_MS, 1);
-        video.style.opacity = from + (to - from) * t;
-        if (t < 1) { fadeRAF = requestAnimationFrame(step); }
-        else { fadeRAF = null; if (onDone) onDone(); }
+    /* draw points on top */
+    for (var i = 0; i < len; i++) {
+      var p = particles[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.blue
+        ? 'rgba(26,107,255,0.75)'
+        : 'rgba(76,201,255,0.7)';
+      ctx.fill();
+    }
+  }
+
+  resize();
+  draw();
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('touchmove', function (e) {
+    if (e.touches[0]) { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; }
+  }, { passive: true });
+})();
+
+/* ── 2. YEAR ─────────────────────────────────────────── */
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ── 3. NAVBAR SCROLL STATE ──────────────────────────── */
+(function () {
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function () {
+    navbar.classList.toggle('scrolled', window.scrollY > 80);
+  }, { passive: true });
+})();
+
+/* ── 4. SMOOTH SCROLL ────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+document.getElementById('scrollDown').addEventListener('click', function () {
+  document.getElementById('problema').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* ── 5. INTERSECTION OBSERVER (fade-in + counters) ───── */
+(function () {
+  var countersRun = false;
+
+  function animateCounter(el) {
+    var target = parseInt(el.dataset.counter, 10);
+    var prefix = el.dataset.prefix || '';
+    var suffix = el.dataset.suffix || '';
+    var duration = 1500;
+    var t0 = performance.now();
+    function step(now) {
+      var p = Math.min((now - t0) / duration, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.innerHTML = prefix + Math.round(eased * target) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  var fadeObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+
+        /* trigger counters when stats row becomes visible */
+        if (!countersRun && entry.target.classList.contains('stats-row')) {
+          countersRun = true;
+          entry.target.querySelectorAll('[data-counter]').forEach(animateCounter);
+        }
       }
-      fadeRAF = requestAnimationFrame(step);
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in').forEach(function (el) {
+    fadeObserver.observe(el);
+  });
+})();
+
+/* ── 6. FORM ─────────────────────────────────────────── */
+(function () {
+  var form      = document.getElementById('demoForm');
+  var statusBox = document.getElementById('formStatus');
+  var submitBtn = document.getElementById('submitBtn');
+
+  var fields = [
+    { id: 'f-nombre',   name: 'nombre' },
+    { id: 'f-empresa',  name: 'empresa' },
+    { id: 'f-whatsapp', name: 'whatsapp' },
+    { id: 'f-rubro',    name: 'rubro' },
+    { id: 'f-mensajes', name: 'mensajes_dia' },
+  ];
+
+  function validate() {
+    var ok = true;
+    fields.forEach(function (f) {
+      var el = document.getElementById(f.id);
+      var val = el.value.trim();
+      if (!val) {
+        el.classList.add('invalid');
+        ok = false;
+      } else {
+        el.classList.remove('invalid');
+      }
+    });
+    return ok;
+  }
+
+  /* live clear invalid state */
+  fields.forEach(function (f) {
+    var el = document.getElementById(f.id);
+    el.addEventListener('input', function () { if (this.value.trim()) this.classList.remove('invalid'); });
+    el.addEventListener('change', function () { if (this.value.trim()) this.classList.remove('invalid'); });
+  });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (!validate()) {
+      statusBox.textContent = 'Completá todos los campos para continuar.';
+      statusBox.className = 'form-status error';
+      return;
     }
 
-    video.addEventListener('canplay', function onReady() {
-      video.removeEventListener('canplay', onReady);
-      video.style.opacity = 0;
-      video.play().catch(function () {});
-      cancelFade();
-      animateFade(0, 1, null);
-    });
+    statusBox.className = 'form-status';
+    statusBox.textContent = '';
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Enviando…';
 
-    video.addEventListener('timeupdate', function () {
-      if (
-        !fadeOutScheduled &&
-        video.duration && !isNaN(video.duration) &&
-        video.duration - video.currentTime <= FADE_OUT_BEFORE_S
-      ) {
-        fadeOutScheduled = true;
-        cancelFade();
-        animateFade(1, 0, function () {
-          setTimeout(function () {
-            video.currentTime = 0;
-            video.play().catch(function () {});
-            fadeOutScheduled = false;
-            animateFade(0, 1, null);
-          }, 100);
-        });
-      }
-    });
-  })();
+    var fd = new FormData(form);
+    var payload = {
+      nombre:       fd.get('nombre'),
+      empresa:      fd.get('empresa'),
+      whatsapp:     fd.get('whatsapp'),
+      rubro:        fd.get('rubro'),
+      mensajes_dia: fd.get('mensajes_dia'),
+      origen:       'landing-escalia-webgl',
+      fecha:        new Date().toISOString()
+    };
 
-  /* ── MARQUEE ── */
-  (function () {
-    var items = [
-      { initial: 'C', name: 'Clínica Estética', bg: '#122a5e' },
-      { initial: 'A', name: 'Academia Online',  bg: '#0e2d56' },
-      { initial: 'C', name: 'Consultora MKT',   bg: '#112648' },
-      { initial: 'I', name: 'Inmobiliaria',     bg: '#0a2040' },
-      { initial: 'E', name: 'E-commerce',       bg: '#132c5a' },
-      { initial: 'R', name: 'Restaurante',      bg: '#0d2444' },
-    ];
-    function buildItems(list) {
-      return list.map(function (item) {
-        return '<div class="marquee-item">'
-          + '<div class="marquee-icon liquid-glass" style="background:' + item.bg + ';border-radius:6px;">' + item.initial + '</div>'
-          + '<span class="marquee-name">' + item.name + '</span>'
-          + '</div>';
-      }).join('');
+    try {
+      var res = await fetch(
+        'https://neogen-n8n-n8n.8fevsr.easypanel.host/webhook/landing-escalia',
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
+      );
+      if (!res.ok) throw new Error('webhook error');
+      statusBox.textContent = '✓ Recibimos tu consulta. Te contactamos pronto.';
+      statusBox.className = 'form-status success';
+      form.reset();
+      fields.forEach(function (f) { document.getElementById(f.id).classList.remove('invalid'); });
+    } catch (err) {
+      statusBox.textContent = 'Hubo un problema al enviar. Podés escribirnos por WhatsApp o redes en el pie de página.';
+      statusBox.className = 'form-status error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Agendá tu demo gratis';
     }
-    var track = document.getElementById('marqueeTrack');
-    track.innerHTML = buildItems(items) + buildItems(items);
-  })();
-
-  /* ── FORM ── */
-  (function () {
-    var form      = document.getElementById('demoForm');
-    var statusBox = document.getElementById('formStatus');
-    var submitBtn = document.getElementById('submitBtn');
-
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      statusBox.className = 'form-status';
-      statusBox.textContent = '';
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Enviando…';
-
-      var fd = new FormData(form);
-      var payload = {
-        nombre:       fd.get('nombre'),
-        empresa:      fd.get('empresa'),
-        whatsapp:     fd.get('whatsapp'),
-        mensajes_dia: fd.get('mensajes_dia'),
-        origen:       'landing-escalia-v2',
-        fecha:        new Date().toISOString()
-      };
-
-      try {
-        var res = await fetch(
-          'https://neogen-n8n-n8n.8fevsr.easypanel.host/webhook/landing-escalia',
-          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-        );
-        if (!res.ok) throw new Error('webhook error');
-        statusBox.textContent = 'Perfecto. Te contactamos por WhatsApp en menos de 24 horas para coordinar la demo.';
-        statusBox.className = 'form-status success';
-        form.reset();
-      } catch (err) {
-        statusBox.textContent = 'Hubo un problema al enviar. Podés escribirnos directamente por WhatsApp o por redes en el pie de página.';
-        statusBox.className = 'form-status error';
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Agendá tu demo gratis';
-      }
-    });
-  })();
+  });
+})();
 </script>
 </body>
 </html>
