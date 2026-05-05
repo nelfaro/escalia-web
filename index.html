@@ -322,7 +322,7 @@
     /* ═════════════════════════════ 2. PROBLEMA ════════ */
     .problem-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
       margin-top: 48px;
     }
@@ -348,97 +348,50 @@
     .problem-card p { font-size: 14px; color: var(--fg-sub); line-height: 1.65; }
 
     /* ═════════════════════════════ 3. SOLUCIÓN ════════ */
-    .solution-grid {
+    .sol-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
       margin-top: 48px;
     }
-    .solution-text h2 {
+    .sol-card {
+      padding: 32px;
+    }
+    .sol-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+    .sol-card-icon svg { width: 20px; height: 20px; }
+    .sol-card h3 {
       font-family: var(--font-display);
-      font-size: clamp(26px, 3.8vw, 44px);
+      font-size: 18px;
       font-weight: 600;
-      letter-spacing: -0.02em;
       color: var(--fg);
-      line-height: 1.15;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .sol-card p {
+      font-size: 14px;
+      color: var(--fg-sub);
+      line-height: 1.7;
       margin-bottom: 16px;
     }
-    .solution-text p {
-      font-size: 16px;
-      color: var(--fg-sub);
-      line-height: 1.75;
-      margin-bottom: 24px;
-    }
-    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-    .feature-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 15px;
-      color: var(--fg-sub);
-    }
-    .check {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent-green);
-      flex-shrink: 0;
-      margin-top: 2px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .check svg { width: 10px; height: 10px; }
-
-    /* Chat mockup */
-    .chat-mockup { padding: 0; overflow: hidden; border-radius: 20px; max-width: 380px; }
-    .chat-header {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .chat-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(26,107,255,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent-blue-lt);
-      flex-shrink: 0;
-    }
-    .chat-name { font-weight: 600; font-size: 14px; color: var(--fg); }
-    .agent-badge {
-      display: inline-block;
-      font-size: 10px;
-      padding: 2px 8px;
+    .sol-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sol-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(0,200,150,0.15);
-      color: var(--accent-green);
-      font-weight: 700;
-      margin-top: 2px;
+      border: 1px solid var(--border);
+      color: var(--fg-sub);
+      letter-spacing: 0.03em;
     }
-    .chat-messages { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .chat-msg { font-size: 13px; line-height: 1.55; padding: 10px 14px; border-radius: 12px; max-width: 88%; }
-    .msg-user  { background: rgba(255,255,255,0.06); align-self: flex-start; color: var(--fg-sub); }
-    .msg-agent { background: rgba(26,107,255,0.15); align-self: flex-end; color: var(--fg); }
-    .msg-ia-badge {
-      font-size: 9px;
-      font-weight: 700;
-      background: var(--accent-blue);
-      color: #fff;
-      border-radius: 4px;
-      padding: 1px 5px;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-    .msg-time { font-size: 10px; color: var(--fg-sub); opacity: 0.5; display: block; margin-top: 4px; text-align: right; }
 
     /* ═══════════════════════ 4. CÓMO FUNCIONA ═════════ */
     .steps-grid {
@@ -678,10 +631,8 @@
 
     /* ── RESPONSIVE ──────────────────────────────────── */
     @media (max-width: 960px) {
-      .problem-grid, .steps-grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .problem-grid, .sol-grid, .steps-grid, .testimonials-grid { grid-template-columns: 1fr; }
       .dash-kpis { grid-template-columns: repeat(2, 1fr); }
-      .solution-grid { grid-template-columns: 1fr; }
-      .chat-mockup { max-width: 100%; }
     }
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -717,12 +668,13 @@
   <section class="hero" id="inicio">
 
     <nav class="navbar glass" id="navbar">
-      <a class="brand" href="#">Escal IA</a>
+      <a class="brand" href="#">
+        <img src="assets/logo.svg" alt="Escal IA" style="height:40px;width:auto;display:block;">
+      </a>
       <ul class="nav-links">
         <li><a href="#solucion">Agente IA</a></li>
         <li><a href="#dashboard">Dashboard</a></li>
         <li><a href="#testimonios">Casos</a></li>
-        <li><a href="#demo">Planes</a></li>
       </ul>
       <a class="nav-btn glass" href="#demo">Quiero una demo</a>
     </nav>
@@ -730,17 +682,16 @@
     <div class="hero-inner">
       <div class="eyebrow-badge glass fade-in">
         <span class="pulse-dot"></span>
-        Agente de IA para WhatsApp · Disponible ahora
+        Agentes de IA · Automatizaciones · Dashboards interactivos
       </div>
 
       <h1 class="headline fade-in" style="transition-delay:0.08s;">
-        Tu agente de IA trabaja.<br>
-        <span class="gradient-text">Vos cerrás ventas.</span>
+        Tu negocio en piloto automático.<br>
+        <span class="gradient-text">Vos tomás las decisiones.</span>
       </h1>
 
       <p class="hero-subtitle fade-in" style="transition-delay:0.16s;">
-        Responde consultas, califica leads y hace seguimiento por WhatsApp, 24/7.<br>
-        Vos mirás el dashboard. El agente trabaja.
+        Agentes de IA, automatizaciones, ciencia de datos y dashboards interactivos para PyMEs que quieren crecer sin contratar más gente ni operar a ciegas.
       </p>
 
       <div class="cta-row fade-in" style="transition-delay:0.24s;">
@@ -776,29 +727,39 @@
   <section class="section" id="problema">
     <div class="container">
       <div class="eyebrow fade-in">¿Esto te suena familiar?</div>
-      <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(28px,4.5vw,52px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);max-width:600px;line-height:1.15;transition-delay:0.08s;">
-        Tu WhatsApp no para.<br>Tu equipo, sí.
+      <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(28px,4.5vw,52px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);max-width:680px;line-height:1.15;transition-delay:0.08s;">
+        Manejás tu negocio a ciegas. Y lo sabés.
       </h2>
+      <p class="fade-in" style="color:var(--fg-sub);font-size:16px;line-height:1.75;max-width:560px;margin-top:16px;transition-delay:0.14s;">
+        Las PyMEs no pierden por falta de clientes. Pierden porque no tienen el tiempo, las herramientas ni la información para atenderlos bien.
+      </p>
       <div class="problem-grid">
         <div class="problem-card glass fade-in" style="transition-delay:0.1s;">
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
-          <h3>Respondés lo mismo 40 veces por día</h3>
-          <p>Precios, disponibilidad, entregas. Cada día, desde cero, mientras el negocio necesita tu atención en otro lado.</p>
+          <h3>Tu tiempo se va en tareas que no te hacen crecer</h3>
+          <p>Respondés lo mismo 40 veces por día, coordinás manualmente y apagás incendios en lugar de construir algo.</p>
         </div>
         <div class="problem-card glass fade-in" style="transition-delay:0.18s;">
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
-          <h3>Contratás gente solo para el WhatsApp</h3>
-          <p>Y aun así no alcanza cuando se acumulan los mensajes. Sueldo, cargas, vacaciones — y los fines de semana sin cubrir.</p>
+          <h3>No tenés datos para tomar decisiones</h3>
+          <p>Sin métricas, todo es intuición. No sabés qué funciona, qué no, ni dónde estás perdiendo dinero cada semana.</p>
         </div>
         <div class="problem-card glass fade-in" style="transition-delay:0.26s;">
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
           </svg>
-          <h3>Perdés ventas por llegar tarde</h3>
+          <h3>Tus procesos dependen de personas</h3>
+          <p>Si falta alguien, el sistema para. No hay automatización, no hay escala, no hay margen para el error humano.</p>
+        </div>
+        <div class="problem-card glass fade-in" style="transition-delay:0.34s;">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <h3>Perdés ventas por no responder a tiempo</h3>
           <p>El cliente pregunta, vos tardás dos horas, el cliente compra en otro lado. A veces te avisan. La mayoría, no.</p>
         </div>
       </div>
@@ -808,60 +769,70 @@
   <!-- ══════════════════════ 3. SOLUCIÓN ═════════════ -->
   <section class="section" id="solucion">
     <div class="container">
-      <div class="solution-grid">
-        <div class="solution-text">
-          <div class="eyebrow fade-in">La solución</div>
-          <h2 class="fade-in" style="transition-delay:0.08s;">Un agente que trabaja por vos, 24/7</h2>
-          <p class="fade-in" style="transition-delay:0.16s;">
-            Configurás una vez. El agente atiende, clasifica, responde y hace seguimiento. Sin errores, sin ausencias, sin costo de hora extra.
-          </p>
-          <ul class="feature-list fade-in" style="transition-delay:0.24s;">
-            <li>
-              <span class="check">
-                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
-              </span>
-              Respuestas instantáneas a consultas frecuentes
-            </li>
-            <li>
-              <span class="check">
-                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
-              </span>
-              Clasificación automática por tipo de consulta
-            </li>
-            <li>
-              <span class="check">
-                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
-              </span>
-              Seguimiento programado de leads sin perder ninguno
-            </li>
-            <li>
-              <span class="check">
-                <svg viewBox="0 0 10 10" fill="none" stroke="#02030a" stroke-width="2"><polyline points="1.5 5 4 7.5 8.5 2.5"/></svg>
-              </span>
-              Integración directa con tu WhatsApp Business
-            </li>
-          </ul>
-        </div>
-
-        <div class="chat-mockup glass fade-in" style="transition-delay:0.2s;">
-          <div class="chat-header">
-            <div class="chat-avatar">WA</div>
-            <div>
-              <div class="chat-name">WhatsApp Business</div>
-              <span class="agent-badge">Agente IA activo</span>
-            </div>
+      <div style="text-align:center; max-width:600px; margin:0 auto;">
+        <div class="eyebrow fade-in">La solución</div>
+        <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(26px,4vw,48px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);transition-delay:0.08s;">
+          Cuatro herramientas. Un solo sistema.
+        </h2>
+        <p class="fade-in" style="color:var(--fg-sub);font-size:16px;line-height:1.75;margin-top:12px;transition-delay:0.16s;">
+          No vendemos tecnología suelta. Construimos el sistema operativo de tu negocio: cada herramienta potencia a las demás.
+        </p>
+      </div>
+      <div class="sol-grid">
+        <div class="sol-card glass fade-in" style="transition-delay:0.1s;">
+          <div class="sol-card-icon" style="background:rgba(26,107,255,0.12);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue-lt)" stroke-width="1.5">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
           </div>
-          <div class="chat-messages">
-            <div class="chat-msg msg-user">Hola, cuánto sale el plan básico?</div>
-            <div class="chat-msg msg-agent">
-              <span class="msg-ia-badge">IA</span>¡Hola! El plan Start arranca en USD 499. Incluye diagnóstico, prototipo funcional e integración básica. ¿Querés que te cuente más sobre lo que incluye?
-              <span class="msg-time">hace 2 seg</span>
-            </div>
-            <div class="chat-msg msg-user">Tiene período de prueba?</div>
-            <div class="chat-msg msg-agent">
-              <span class="msg-ia-badge">IA</span>Sí, hacemos un MVP en 2 semanas para que lo pruebes con clientes reales antes de escalar. ¿Agendamos una demo para mostrarte cómo funciona con tu negocio?
-              <span class="msg-time">hace 1 seg</span>
-            </div>
+          <h3>Agentes de IA</h3>
+          <p>Responden consultas, califican leads y hacen seguimiento en WhatsApp, Instagram y web — sin pausas, sin errores, sin días libres.</p>
+          <div class="sol-tags">
+            <span class="sol-tag">WhatsApp</span>
+            <span class="sol-tag">Instagram</span>
+            <span class="sol-tag">24/7</span>
+          </div>
+        </div>
+        <div class="sol-card glass fade-in" style="transition-delay:0.18s;">
+          <div class="sol-card-icon" style="background:rgba(76,201,255,0.10);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(76,201,255,0.9)" stroke-width="1.5">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3>Automatizaciones</h3>
+          <p>Conectamos tus sistemas y eliminamos el trabajo manual: notificaciones, flujos de venta, reportes automáticos y mucho más.</p>
+          <div class="sol-tags">
+            <span class="sol-tag">n8n</span>
+            <span class="sol-tag">Make</span>
+            <span class="sol-tag">APIs</span>
+          </div>
+        </div>
+        <div class="sol-card glass fade-in" style="transition-delay:0.26s;">
+          <div class="sol-card-icon" style="background:rgba(168,212,255,0.08);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(168,212,255,0.85)" stroke-width="1.5">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3>Ciencia de datos</h3>
+          <p>Transformamos los datos de tu negocio en insights accionables: patrones de compra, predicción de demanda y análisis de clientes.</p>
+          <div class="sol-tags">
+            <span class="sol-tag">Análisis</span>
+            <span class="sol-tag">Predicción</span>
+            <span class="sol-tag">Segmentación</span>
+          </div>
+        </div>
+        <div class="sol-card glass fade-in" style="transition-delay:0.34s;border-color:rgba(0,200,150,0.25);box-shadow:0 0 20px rgba(0,200,150,0.08);">
+          <div class="sol-card-icon" style="background:rgba(0,200,150,0.12);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+            </svg>
+          </div>
+          <h3>Dashboards interactivos</h3>
+          <p>Tu panel de control en tiempo real: métricas de ventas, conversaciones, conversiones y rendimiento — todo en una sola pantalla.</p>
+          <div class="sol-tags">
+            <span class="sol-tag">Tiempo real</span>
+            <span class="sol-tag">Interactivo</span>
+            <span class="sol-tag">A medida</span>
           </div>
         </div>
       </div>
@@ -901,12 +872,12 @@
   <section class="section" id="dashboard">
     <div class="container">
       <div style="text-align:center; max-width:560px; margin:0 auto;">
-        <div class="eyebrow fade-in">Control total</div>
+        <div class="eyebrow fade-in">El diferencial que cambia todo</div>
         <h2 class="fade-in" style="font-family:var(--font-display);font-size:clamp(26px,4vw,44px);font-weight:600;letter-spacing:-0.02em;color:var(--fg);transition-delay:0.08s;">
-          Sabés exactamente qué está haciendo tu agente
+          Tu negocio en una pantalla. En tiempo real.
         </h2>
         <p class="fade-in" style="color:var(--fg-sub);font-size:16px;line-height:1.7;margin-top:12px;transition-delay:0.16s;">
-          Un dashboard en tiempo real con las métricas que importan. Sin cajas negras, sin suposiciones.
+          No es un PDF que te mandamos una vez por mes. Es tu panel de control — vivo, interactivo, tuyo. Tomás decisiones con datos, no con suposiciones.
         </p>
       </div>
 
@@ -1025,29 +996,31 @@
             <input class="form-input" id="f-empresa" name="empresa" type="text" placeholder="Tu empresa o negocio" />
           </div>
           <div class="form-group">
-            <label class="form-label" for="f-whatsapp">WhatsApp</label>
+            <label class="form-label" for="f-canal">Canal principal de ventas</label>
+            <select class="form-select" id="f-canal" name="canal">
+              <option value="" disabled selected>Seleccioná tu canal</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="instagram">Instagram</option>
+              <option value="web">Página web</option>
+              <option value="email">Email</option>
+              <option value="presencial">Presencial</option>
+              <option value="varios">Varios canales</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-problema">¿Qué problema querés resolver?</label>
+            <select class="form-select" id="f-problema" name="problema">
+              <option value="" disabled selected>Seleccioná tu caso</option>
+              <option value="atencion-cliente">Atención al cliente automática</option>
+              <option value="automatizar-procesos">Automatizar procesos internos</option>
+              <option value="medir-datos">Medir y analizar mis datos</option>
+              <option value="dashboard">Dashboard para tomar decisiones</option>
+              <option value="todo">Todo lo anterior</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-whatsapp">WhatsApp de contacto</label>
             <input class="form-input" id="f-whatsapp" name="whatsapp" type="tel" placeholder="+54 9..." autocomplete="tel" />
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-rubro">Rubro</label>
-            <select class="form-select" id="f-rubro" name="rubro">
-              <option value="" disabled selected>Seleccioná tu rubro</option>
-              <option value="clinica">Clínica / Salud</option>
-              <option value="academia">Academia / Educación</option>
-              <option value="ecommerce">E-commerce</option>
-              <option value="consultora">Consultora</option>
-              <option value="inmobiliaria">Inmobiliaria</option>
-              <option value="otro">Otro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-mensajes">Mensajes por día</label>
-            <select class="form-select" id="f-mensajes" name="mensajes_dia">
-              <option value="" disabled selected>¿Cuántos mensajes recibís?</option>
-              <option value="menos-de-50">Menos de 50</option>
-              <option value="50-200">Entre 50 y 200</option>
-              <option value="mas-de-200">Más de 200</option>
-            </select>
           </div>
           <button type="submit" class="btn-submit" id="submitBtn">Agendá tu demo gratis</button>
           <div id="formStatus" class="form-status"></div>
@@ -1257,9 +1230,9 @@ document.getElementById('scrollDown').addEventListener('click', function () {
   var fields = [
     { id: 'f-nombre',   name: 'nombre' },
     { id: 'f-empresa',  name: 'empresa' },
+    { id: 'f-canal',    name: 'canal' },
+    { id: 'f-problema', name: 'problema' },
     { id: 'f-whatsapp', name: 'whatsapp' },
-    { id: 'f-rubro',    name: 'rubro' },
-    { id: 'f-mensajes', name: 'mensajes_dia' },
   ];
 
   function validate() {
@@ -1300,13 +1273,13 @@ document.getElementById('scrollDown').addEventListener('click', function () {
 
     var fd = new FormData(form);
     var payload = {
-      nombre:       fd.get('nombre'),
-      empresa:      fd.get('empresa'),
-      whatsapp:     fd.get('whatsapp'),
-      rubro:        fd.get('rubro'),
-      mensajes_dia: fd.get('mensajes_dia'),
-      origen:       'landing-escalia-webgl',
-      fecha:        new Date().toISOString()
+      nombre:   fd.get('nombre'),
+      empresa:  fd.get('empresa'),
+      canal:    fd.get('canal'),
+      problema: fd.get('problema'),
+      whatsapp: fd.get('whatsapp'),
+      origen:   'landing-escalia-webgl',
+      fecha:    new Date().toISOString()
     };
 
     try {
