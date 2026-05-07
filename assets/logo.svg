@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658.21 873.61">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-5 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-2 {
+        font-family: Pacaembu-Regular, Pacaembu;
+        font-size: 164.63px;
+      }
+
+      .cls-6 {
+        letter-spacing: -.04em;
+      }
+
+      .cls-7 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-3 {
+        font-family: Inter-Light, Inter;
+        font-size: 64.32px;
+        font-variation-settings: 'wght' 300, 'slnt' 0;
+        font-weight: 300;
+        letter-spacing: .12em;
+      }
+
+      .cls-8 {
+        letter-spacing: -.04em;
+      }
+
+      .cls-9 {
+        letter-spacing: -.02em;
+      }
+    </style>
+  </defs>
+  <g id="Capa_1-2" data-name="Capa 1">
+    <g>
+      <text class="cls-2" transform="translate(4.87 762.98)"><tspan class="cls-4" x="0" y="0">E</tspan><tspan class="cls-5" x="102.4" y="0">s</tspan><tspan class="cls-7" x="187.84" y="0">c</tspan><tspan class="cls-6" x="282.5" y="0">a</tspan><tspan class="cls-9" x="378.64" y="0">l </tspan><tspan class="cls-8" x="476.76" y="0">I</tspan><tspan class="cls-9" x="524.34" y="0">A</tspan></text>
+      <text class="cls-3" transform="translate(0 853.06)"><tspan x="0" y="0">DATA SOLUTIONS</tspan></text>
+      <g>
+        <path class="cls-1" d="M576.93,119.33c1.38.8,1.38,2.12,0,2.92l-244.84,142.51c-1.38.8-3.64.8-5.02,0l-204.06-118.8c-1.38-.8-1.38-2.12,0-2.92L367.8.6c1.38-.8,3.64-.8,5.02,0l204.11,118.73Z"/>
+        <path class="cls-1" d="M590.24,422.22c1.38.8,1.38,2.12,0,2.92l-254.27,147.96c-1.38.8-3.64.8-5.02,0l-137.44-80.03c-1.38-.8-1.38-2.12,0-2.92l254.21-147.9c1.38-.8,3.64-.8,5.02,0l137.5,79.97Z"/>
+        <path class="cls-1" d="M67.96,294.09c-1.38.8-1.38,2.12,0,2.92l205.64,119.63c1.38.8,3.64.8,5.02,0l148.44-86.44c1.38-.8,1.38-2.12,0-2.92l-44.09-25.64c-1.38-.8-3.64-.8-5.02,0l-13.59,7.9c-1.38.8-3.64.8-5.02,0l-156.39-91.05c-1.38-.8-3.64-.8-5.02,0l-129.96,75.62Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
