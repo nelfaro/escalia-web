@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Probá el agente en vivo | Escal IA</title>
+  <meta name="description" content="Chateá con un agente de ventas de IA como lo haría un cliente de tu negocio. Elegí el rubro y probalo en vivo." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Escal IA" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:url" content="https://www.escalia.com.ar/demo.html" />
+  <meta property="og:title" content="Probá el agente de IA en vivo – Escal IA" />
+  <meta property="og:description" content="Elegí un rubro y chateá con el agente como si fueras uno de tus clientes." />
+  <meta property="og:image" content="https://www.escalia.com.ar/assets/og-cover.png" />
+  <link rel="canonical" href="https://www.escalia.com.ar/demo.html" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" />
+
+  <style>
+    /* ── VARIABLES (mismas que index.html) ── */
+    :root {
+      --bg:              #02030a;
+      --bg-deep:         #02030a;
+      --bg-card:         rgba(10, 25, 55, 0.55);
+      --accent-blue:     #1a6bff;
+      --accent-blue-lt:  #4d8fff;
+      --accent-green:    #00c896;
+      --accent-green-lt: #00e8ad;
+      --fg:              #f0eff0;
+      --fg-sub:          #b8c4d4;
+      --border:          rgba(76, 201, 255, 0.15);
+      --radius:          14px;
+      --font-display:    'General Sans', sans-serif;
+      --font-body:       'Geist Sans', 'Inter', system-ui, sans-serif;
+
+      /* WhatsApp */
+      --wa-header:   #075e54;
+      --wa-bg:       #efeae2;
+      --wa-out:      #d9fdd3;
+      --wa-in:       #ffffff;
+      --wa-text:     #111b21;
+      --wa-meta:     #667781;
+      --wa-tick:     #53bdeb;
+      --wa-send:     #00a884;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: var(--fg); text-decoration: none; }
+    button { font-family: var(--font-body); cursor: pointer; }
+
+    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    h1, h2, h3 { font-family: var(--font-display); color: var(--fg); line-height: 1.15; }
+    .eyebrow {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--accent-green); margin-bottom: 8px;
+    }
+
+    /* ── HEADER ── */
+    header { background: rgba(2, 3, 10, 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .brand { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--fg); }
+    .nav-cta-btn {
+      padding: 9px 18px; background: var(--accent-blue); color: var(--fg);
+      border-radius: 999px; font-weight: 600; font-size: 14px; transition: background .2s;
+    }
+    .nav-cta-btn:hover { background: var(--accent-blue-lt); }
+
+    /* ── LAYOUT ── */
+    .demo {
+      padding: 48px 0 72px;
+      background: radial-gradient(ellipse 80% 60% at 70% 0%, rgba(26,107,255,0.14), transparent 70%), var(--bg);
+    }
+    .demo-grid { display: grid; grid-template-columns: 1fr 400px; gap: 48px; align-items: start; }
+    h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 600; letter-spacing: -0.02em; margin: 6px 0 14px; }
+    .lead { font-size: 17px; color: var(--fg-sub); line-height: 1.7; max-width: 520px; margin-bottom: 28px; }
+
+    .step-label {
+      font-size: 13px; font-weight: 600; color: var(--fg-sub);
+      margin: 0 0 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,200,150,.15); color: var(--accent-green);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+    }
+
+    /* Selector de rubro */
+    .biz-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
+    .biz {
+      text-align: left; background: var(--bg-card); color: var(--fg);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; transition: border-color .2s, background .2s;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .biz:hover { border-color: rgba(77,143,255,.45); }
+    .biz[aria-pressed="true"] { border-color: var(--accent-green); background: rgba(15, 35, 75, 0.70); box-shadow: 0 0 0 1px var(--accent-green) inset; }
+    .biz-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      background: rgba(255,255,255,.06);
+    }
+    .biz-name { font-family: var(--font-display); font-weight: 600; font-size: 15px; display: block; }
+    .biz-desc { font-size: 13px; color: var(--fg-sub); line-height: 1.45; display: block; margin-top: 2px; }
+
+    /* Sugerencias */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .chip {
+      background: transparent; color: var(--fg); border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px; padding: 7px 14px; font-size: 13.5px; transition: border-color .2s, background .2s;
+    }
+    .chip:hover { border-color: var(--accent-green); background: rgba(0,200,150,.08); }
+    .chip:disabled { opacity: .45; cursor: not-allowed; }
+
+    .note {
+      font-size: 13px; color: var(--fg-sub); opacity: .75; line-height: 1.6;
+      border-left: 2px solid rgba(255,255,255,.12); padding-left: 12px; max-width: 520px;
+    }
+    .cta-box {
+      margin-top: 28px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; max-width: 520px;
+    }
+    .cta-box h3 { font-size: 17px; margin-bottom: 6px; }
+    .cta-box p { font-size: 14px; color: var(--fg-sub); margin-bottom: 14px; }
+    .btn {
+      display: inline-block; padding: 11px 24px; border-radius: 999px; font-weight: 600; font-size: 14px;
+      border: none; transition: background .2s;
+    }
+    .btn-primary { background: var(--accent-blue); color: var(--fg); box-shadow: 0 0 24px rgba(26,107,255,0.4); }
+    .btn-primary:hover { background: var(--accent-blue-lt); }
+
+    /* ── TELÉFONO ── */
+    .phone-col { position: sticky; top: 84px; }
+    .phone {
+      width: 100%; height: min(760px, calc(100vh - 110px)); min-height: 560px;
+      border-radius: 36px; background: #000; padding: 10px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .screen {
+      width: 100%; height: 100%; border-radius: 28px; overflow: hidden;
+      display: flex; flex-direction: column; background: var(--wa-bg); position: relative;
+    }
+
+    .wa-header {
+      background: var(--wa-header); color: #fff; padding: 12px 12px 10px;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .wa-avatar {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      background: #dfe5e7;
+    }
+    .wa-title { flex: 1; min-width: 0; }
+    .wa-name { font-weight: 600; font-size: 15px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wa-status { font-size: 12px; opacity: .85; line-height: 1.3; }
+    .wa-reset {
+      background: transparent; border: none; color: #fff; opacity: .85; padding: 6px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .wa-reset:hover { opacity: 1; background: rgba(255,255,255,.12); }
+
+    .wa-body {
+      flex: 1; overflow-y: auto; padding: 12px 10px 8px;
+      display: flex; flex-direction: column; gap: 3px;
+      background-color: var(--wa-bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23d6cfc4' fill-opacity='.45'%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='30' r='1.5'/%3E%3Cpath d='M30 60l4-4 4 4-4 4z'/%3E%3Ccircle cx='70' cy='70' r='2'/%3E%3C/g%3E%3C/svg%3E");
+      scroll-behavior: smooth;
+    }
+    .wa-day {
+      align-self: center; background: #fff; color: var(--wa-meta); font-size: 11.5px;
+      padding: 4px 10px; border-radius: 8px; margin: 4px 0 8px; box-shadow: 0 1px .5px rgba(0,0,0,.13);
+    }
+    .wa-e2e {
+      align-self: center; background: #ffeecd; color: #54656f; font-size: 11.5px; text-align: center;
+      padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; max-width: 90%; line-height: 1.4;
+    }
+
+    .msg {
+      max-width: 82%; padding: 6px 8px 4px 9px; border-radius: 8px; font-size: 14.2px; line-height: 1.4;
+      color: var(--wa-text); box-shadow: 0 1px .5px rgba(0,0,0,.13); position: relative;
+      word-wrap: break-word; overflow-wrap: anywhere; white-space: pre-wrap;
+      animation: pop .18s ease-out;
+    }
+    @keyframes pop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .msg-in  { align-self: flex-start; background: var(--wa-in); border-top-left-radius: 0; }
+    .msg-out { align-self: flex-end;  background: var(--wa-out); border-top-right-radius: 0; }
+    .msg + .msg-in.cont, .msg + .msg-out.cont { border-radius: 8px; }
+    .msg.first { margin-top: 6px; }
+    .msg a { color: #027eb5; text-decoration: underline; }
+    .meta {
+      float: right; font-size: 11px; color: var(--wa-meta); margin: 6px 0 -2px 10px;
+      display: inline-flex; align-items: center; gap: 3px; line-height: 1; white-space: nowrap;
+    }
+    .tick { width: 16px; height: 11px; }
+    .tick.read path { stroke: var(--wa-tick); }
+
+    .msg-img { padding: 3px; max-width: 70%; }
+    .msg-img img {
+      display: block; width: 100%; max-height: 300px; object-fit: cover; border-radius: 6px;
+      background: #e9edef; min-height: 120px; cursor: zoom-in;
+    }
+    .msg-img .caption { padding: 4px 5px 0; font-size: 13.5px; }
+    .msg-img .meta { margin-right: 4px; }
+
+    .msg-sys {
+      align-self: center; background: #fff3f2; color: #8a2b22; font-size: 12.5px;
+      padding: 6px 10px; border-radius: 8px; max-width: 90%; text-align: center; margin: 6px 0;
+    }
+
+    .typing { display: inline-flex; gap: 3px; padding: 4px 2px; }
+    .typing span {
+      width: 7px; height: 7px; border-radius: 50%; background: #9aa6ad;
+      animation: blink 1.2s infinite ease-in-out;
+    }
+    .typing span:nth-child(2) { animation-delay: .15s; }
+    .typing span:nth-child(3) { animation-delay: .3s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+
+    .wa-footer {
+      display: flex; align-items: flex-end; gap: 6px; padding: 6px 6px 8px; background: transparent; flex-shrink: 0;
+    }
+    .wa-input-wrap {
+      flex: 1; background: #fff; border-radius: 22px; display: flex; align-items: flex-end;
+      padding: 8px 14px; min-height: 44px; box-shadow: 0 1px .5px rgba(0,0,0,.13);
+    }
+    .wa-input {
+      flex: 1; border: none; outline: none; resize: none; font-family: var(--font-body);
+      font-size: 15px; line-height: 1.4; color: var(--wa-text); background: transparent;
+      max-height: 110px; height: 21px;
+    }
+    .wa-input::placeholder { color: #8696a0; }
+    .wa-send {
+      width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--wa-send); color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity .2s;
+    }
+    .wa-send:disabled { opacity: .5; cursor: not-allowed; }
+    .wa-send:focus-visible, .wa-reset:focus-visible, .biz:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent-green-lt); outline-offset: 2px; }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0; background: rgba(0,0,0,.85); display: none;
+      align-items: center; justify-content: center; z-index: 100; padding: 24px; cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+
+    footer { border-top: 1px solid var(--border); padding: 24px 0; font-size: 13px; color: var(--fg-sub); }
+    .footer-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer-links a { color: var(--fg-sub); }
+    .footer-links a:hover { color: var(--fg); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .demo { padding: 28px 0 48px; }
+      .demo-grid { grid-template-columns: 1fr; gap: 24px; }
+      .phone-col { position: static; order: 2; }
+      .intro { order: 1; }
+      .phone { height: calc(100svh - 90px); min-height: 520px; max-height: 760px; border-radius: 28px; padding: 6px; }
+      .screen { border-radius: 22px; }
+      .lead { margin-bottom: 20px; }
+      .biz-list, .chips { margin-bottom: 20px; }
+      .desk-only { display: none; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      .biz-list { grid-template-columns: 1fr; }
+      .phone { padding: 0; background: transparent; box-shadow: none; border-radius: 14px; }
+      .screen { border-radius: 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .msg, .typing span { animation: none; }
+      .wa-body { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">Escal IA</a>
+    <nav>
+      <a class="nav-cta-btn" href="index.html#demo">Lo quiero para mi negocio</a>
+    </nav>
+  </div>
+</header>
+
+<main class="demo">
+  <div class="container demo-grid">
+
+    <!-- Columna izquierda: instrucciones + selector -->
+    <div class="intro">
+      <div class="eyebrow">Demo en vivo</div>
+      <h1>Hablale al agente como lo haría tu cliente.</h1>
+      <p class="lead">Elegí un rubro y escribí como si fueras un comprador: preguntá precios, pedí fotos, armá un pedido. Responde el mismo agente que usan nuestros clientes, en tiempo real.</p>
+
+      <p class="step-label"><span class="step-num">1</span> Elegí el tipo de negocio</p>
+      <div class="biz-list" id="bizList" role="group" aria-label="Tipo de negocio"></div>
+
+      <p class="step-label"><span class="step-num">2</span> Empezá con una de estas o escribí lo tuyo</p>
+      <div class="chips" id="chips"></div>
+
+      <p class="note">Es una demo: el catálogo, los precios y los pedidos son ficticios y no se procesan compras reales. No compartas datos personales sensibles.</p>
+
+      <div class="cta-box desk-only">
+        <h3>¿Te imaginás esto en tu WhatsApp?</h3>
+        <p>Lo configuramos con tu catálogo, tus precios y tu forma de vender. En menos de una semana.</p>
+        <a class="btn btn-primary" href="index.html#demo">Pedí tu demo personalizada</a>
+      </div>
+    </div>
+
+    <!-- Columna derecha: teléfono -->
+    <div class="phone-col">
+      <div class="phone">
+        <div class="screen">
+          <div class="wa-header">
+            <div class="wa-avatar" id="waAvatar" aria-hidden="true">🔧</div>
+            <div class="wa-title">
+              <div class="wa-name" id="waName">—</div>
+              <div class="wa-status" id="waStatus">en línea</div>
+            </div>
+            <button class="wa-reset" id="resetBtn" type="button" title="Reiniciar conversación" aria-label="Reiniciar conversación">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+            </button>
+          </div>
+
+          <div class="wa-body" id="waBody" aria-live="polite" aria-label="Conversación"></div>
+
+          <form class="wa-footer" id="waForm" autocomplete="off">
+            <div class="wa-input-wrap">
+              <textarea class="wa-input" id="waInput" rows="1" maxlength="500" placeholder="Escribí un mensaje" aria-label="Mensaje"></textarea>
+            </div>
+            <button class="wa-send" id="waSend" type="submit" aria-label="Enviar" disabled>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4 20.85 12.9a1 1 0 0 0 0-1.8L3.4 3.6a1 1 0 0 0-1.39 1.17L4 11l9 1-9 1-1.99 6.23a1 1 0 0 0 1.39 1.17z"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Imagen ampliada"><img alt="" /></div>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© <span id="y"></span> Escal IA – Data Solutions. Todos los derechos reservados.</div>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/company/escal-ia" rel="noopener">LinkedIn</a>
+      <a href="https://www.instagram.com/escal.ia" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/EscalaConIA" rel="noopener">Facebook</a>
+      <a href="https://wa.me/5493794260543" rel="noopener">WhatsApp</a>
+      <a href="index.html">Volver al sitio</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ══════════════════════════════════════════════════════════
+     CONFIGURACIÓN
+     - WEBHOOK_URL: webhook de producción del workflow de demo en n8n.
+     - Agregar un rubro = sumar un objeto a NEGOCIOS (y su perfil en
+       el nodo "Config negocio" de n8n con la misma clave `id`).
+     - Modo simulado: si WEBHOOK_URL está vacío o la URL tiene ?mock=1
+     ══════════════════════════════════════════════════════════ */
+  var WEBHOOK_URL = 'https://neogen-n8n-n8n.8fevsr.easypanel.host/webhook/demo-agente';
+  var TIMEOUT_MS  = 60000;
+  var MAX_MENSAJES_POR_SESION = 40;
+
+  var NEGOCIOS = [
+    {
+      id: 'repuestos',
+      icono: '🔧',
+      rubro: 'Repuestos automotor',
+      descripcion: 'Distribuidora mayorista de autopartes',
+      contacto: 'Repuestos Mayorista · Javier',
+      saludo: '¡Hola! 👋 Soy Javier, de Repuestos Mayorista. ¿Qué repuesto estás buscando? Si me pasás marca, modelo y año del vehículo te lo encuentro más rápido.',
+      sugerencias: [
+        'Hola, necesito pastillas de freno para un Gol Trend 2015',
+        '¿Tienen amortiguadores para Hilux?',
+        'Mandame fotos del filtro de aceite',
+        '¿Cuál es el mínimo de compra?'
+      ]
+    },
+    {
+      id: 'roperia',
+      icono: '👕',
+      rubro: 'Ropería',
+      descripcion: 'Mayorista de indumentaria para revendedoras',
+      contacto: 'Ropería Mayorista · Sofía',
+      saludo: '¡Hola! 😊 Soy Sofía, de Ropería Mayorista. Trabajamos por mayor para comercios y revendedoras. ¿Qué estás buscando para tu local?',
+      sugerencias: [
+        'Hola, busco remeras básicas de algodón por mayor',
+        '¿Qué jeans de mujer tienen y en qué talles?',
+        '¿Me mandás fotos de los buzos?',
+        '¿Cómo es la compra mínima y el envío?'
+      ]
+    }
+  ];
+
+  /* ── Estado ── */
+  var params   = new URLSearchParams(location.search);
+  var MOCK     = !WEBHOOK_URL || params.get('mock') === '1';
+  var negocio  = NEGOCIOS.find(function (n) { return n.id === params.get('rubro'); }) || NEGOCIOS[0];
+  var session  = null;
+  var enviados = 0;
+  var ocupado  = false;
+  var ultimoLado = null;
+
+  /* ── DOM ── */
+  var $ = function (id) { return document.getElementById(id); };
+  var bizList = $('bizList'), chipsBox = $('chips'), body = $('waBody');
+  var form = $('waForm'), input = $('waInput'), sendBtn = $('waSend');
+  var waName = $('waName'), waStatus = $('waStatus'), waAvatar = $('waAvatar');
+  var lightbox = $('lightbox');
+
+  $('y').textContent = new Date().getFullYear();
+
+  /* ── Utilidades ── */
+  function nuevaSesion() {
+    var r = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+      : 'xxxxxxxxxxxx'.replace(/x/g, function () { return (Math.random() * 16 | 0).toString(16); });
+    return r.replace(/-/g, '').slice(0, 20);
+  }
+  function hora() {
+    var d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  /* Formato WhatsApp: *negrita* _cursiva_ ~tachado~ `mono` + links */
+  function formatoWA(texto) {
+    var s = escapeHtml(texto);
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');         // markdown del modelo
+    s = s.replace(/(^|[\s(])\*(?!\s)([^*\n]+?)\*(?=[\s.,;:!?)]|$)/g, '$1<strong>$2</strong>');
+    s = s.replace(/(^|[\s(])_(?!\s)([^_\n]+?)_(?=[\s.,;:!?)]|$)/g, '$1<em>$2</em>');
+    s = s.replace(/(^|[\s(])~(?!\s)([^~\n]+?)~(?=[\s.,;:!?)]|$)/g, '$1<s>$2</s>');
+    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    s = s.replace(/https?:\/\/[^\s<]+?(?=[.,;:!?)]*(?:\s|<|$|&quot;|&#39;|&lt;))/g, function (u) {
+      return '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>';
+    });
+    return s;
+  }
+  var TICK = '<svg class="tick" viewBox="0 0 16 11" aria-hidden="true" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="#8696a0" d="M1 6l3 3 6-7.5M7.5 8.3l.9.7 6-7.5"/></svg>';
+
+  function scrollAbajo() { body.scrollTop = body.scrollHeight; }
+
+  function marcarLeidos() {
+    body.querySelectorAll('.tick:not(.read)').forEach(function (t) { t.classList.add('read'); });
+  }
+
+  function agregarTexto(texto, lado) {
+    var el = document.createElement('div');
+    el.className = 'msg ' + (lado === 'out' ? 'msg-out' : 'msg-in') + (ultimoLado !== lado ? ' first' : ' cont');
+    el.innerHTML = formatoWA(texto) +
+      '<span class="meta">' + hora() + (lado === 'out' ? ' ' + TICK : '') + '</span>';
+    body.appendChild(el);
+    ultimoLado = lado;
+    scrollAbajo();
+  }
+
+  function agregarImagen(url, caption) {
+    var el = document.createElement('div');
+    el.className = 'msg msg-in msg-img' + (ultimoLado !== 'in' ? ' first' : ' cont');
+    var img = document.createElement('img');
+    img.src = url;
+    img.alt = caption || 'Foto del producto';
+    img.loading = 'lazy';
+    img.referrerPolicy = 'no-referrer';
+    img.addEventListener('load', scrollAbajo);
+    img.addEventListener('error', function () {
+      img.replaceWith(Object.assign(document.createElement('div'), {
+        className: 'caption', textContent: '📷 No se pudo cargar la imagen'
+      }));
+    });
+    img.addEventListener('click', function () {
+      lightbox.querySelector('img').src = url;
+      lightbox.classList.add('open');
+    });
+    el.appendChild(img);
+    var cap = document.createElement('div');
+    cap.className = 'caption';
+    cap.innerHTML = (caption ? formatoWA(caption) : '') + '<span class="meta">' + hora() + '</span>';
+    el.appendChild(cap);
+    body.appendChild(el);
+    ultimoLado = 'in';
+    scrollAbajo();
+  }
+
+  function agregarSistema(texto) {
+    var el = document.createElement('div');
+    el.className = 'msg-sys';
+    el.textContent = texto;
+    body.appendChild(el);
+    ultimoLado = null;
+    scrollAbajo();
+  }
+
+  var typingEl = null;
+  function mostrarEscribiendo(on) {
+    waStatus.textContent = on ? 'escribiendo…' : 'en línea';
+    if (on && !typingEl) {
+      typingEl = document.createElement('div');
+      typingEl.className = 'msg msg-in' + (ultimoLado !== 'in' ? ' first' : '');
+      typingEl.setAttribute('aria-label', 'escribiendo');
+      typingEl.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+      body.appendChild(typingEl);
+      scrollAbajo();
+    } else if (!on && typingEl) {
+      typingEl.remove();
+      typingEl = null;
+    }
+  }
+
+  function espera(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  /* ── Normalizar respuesta de n8n ──
+     Acepta: { mensajes:[{tipo:'texto',texto}|{tipo:'imagen',url,caption}] }
+             { output:'...' } | { respuesta:'...' } | [ {...} ] | 'texto plano'
+     y marcadores [[IMG:url|caption]] dentro del texto. */
+  function normalizar(data) {
+    if (Array.isArray(data)) data = data[0] || {};
+    if (typeof data === 'string') data = { output: data };
+    var lista = [];
+    if (data && Array.isArray(data.mensajes)) {
+      lista = data.mensajes;
+    } else {
+      var t = (data && (data.output || data.respuesta || data.text || data.message)) || '';
+      lista = [{ tipo: 'texto', texto: String(t) }];
+    }
+    var final = [];
+    lista.forEach(function (m) {
+      if (m.tipo === 'imagen' && m.url) { final.push(m); return; }
+      var texto = String(m.texto || '');
+      var re = /\[\[IMG:([^\]|]+)(?:\|([^\]]*))?\]\]/g, match;
+      while ((match = re.exec(texto))) final.push({ tipo: 'imagen', url: match[1].trim(), caption: (match[2] || '').trim() });
+      texto = texto.replace(re, '').replace(/\n{3,}/g, '\n\n').trim();
+      if (texto) final.push({ tipo: 'texto', texto: texto });
+    });
+    return final;
+  }
+
+  /* ── Llamada al agente ── */
+  function llamarAgente(mensaje) {
+    if (MOCK) return respuestaSimulada(mensaje);
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, TIMEOUT_MS);
+    return fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        negocio: negocio.id,
+        session_id: session,
+        mensaje: mensaje,
+        origen: 'web-demo',
+        fecha: new Date().toISOString()
+      }),
+      signal: ctrl.signal
+    }).then(function (res) {
+      if (res.status === 429) throw new Error('limite');
+      if (!res.ok) throw new Error('http ' + res.status);
+      var ct = res.headers.get('content-type') || '';
+      return ct.indexOf('json') > -1 ? res.json() : res.text();
+    }).finally(function () { clearTimeout(timer); });
+  }
+
+  function respuestaSimulada(mensaje) {
+    var foto = 'data:image/svg+xml,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#dfe5e7"/>' +
+      '<text x="200" y="160" font-family="sans-serif" font-size="22" fill="#54656f" text-anchor="middle">Foto de producto</text></svg>');
+    var pideFoto = /foto|imagen|ver/i.test(mensaje);
+    return espera(900 + Math.random() * 900).then(function () {
+      return {
+        mensajes: (pideFoto ? [{ tipo: 'imagen', url: foto, caption: '*Producto de ejemplo* – $12.500' }] : []).concat([
+          { tipo: 'texto', texto: '(Modo simulado) Recibí: "' + mensaje + '".\nCuando el webhook de n8n esté activo, acá responde el agente real de *' + negocio.rubro + '*.' }
+        ])
+      };
+    });
+  }
+
+  function setOcupado(v) {
+    ocupado = v;
+    sendBtn.disabled = v || !input.value.trim();
+    chipsBox.querySelectorAll('.chip').forEach(function (c) { c.disabled = v; });
+  }
+
+  function enviar(texto) {
+    texto = String(texto || '').trim().slice(0, 500);
+    if (!texto || ocupado) return;
+    if (enviados >= MAX_MENSAJES_POR_SESION) {
+      agregarSistema('Llegaste al límite de mensajes de la demo. Reiniciá la conversación para seguir probando.');
+      return;
+    }
+    enviados++;
+    agregarTexto(texto, 'out');
+    input.value = '';
+    autoAlto();
+    setOcupado(true);
+
+    var sesionEnvio = session;
+    espera(350).then(function () {
+      if (sesionEnvio !== session) return;
+      marcarLeidos();
+      mostrarEscribiendo(true);
+      return llamarAgente(texto);
+    }).then(function (data) {
+      if (sesionEnvio !== session || data === undefined) return;
+      var msgs = normalizar(data);
+      if (!msgs.length) throw new Error('vacio');
+      mostrarEscribiendo(false);
+      // Entregar como burbujas sucesivas, estilo WhatsApp
+      return msgs.reduce(function (p, m, i) {
+        return p.then(function () {
+          if (sesionEnvio !== session) return;
+          if (i > 0) { mostrarEscribiendo(true); return espera(500).then(function () { mostrarEscribiendo(false); pintar(m); }); }
+          pintar(m);
+        });
+      }, Promise.resolve());
+    }).catch(function (err) {
+      if (sesionEnvio !== session) return;
+      mostrarEscribiendo(false);
+      var msg = err && err.name === 'AbortError' ? 'El agente tardó demasiado en responder. Probá de nuevo.'
+        : err && err.message === 'limite' ? 'Hay muchas consultas en este momento. Esperá unos segundos y volvé a intentar.'
+        : 'No pudimos conectar con el agente. Probá de nuevo en un momento.';
+      agregarSistema(msg);
+    }).finally(function () {
+      if (sesionEnvio !== session) return;
+      mostrarEscribiendo(false);
+      setOcupado(false);
+      input.focus({ preventScroll: true });
+    });
+  }
+
+  function pintar(m) {
+    if (m.tipo === 'imagen') agregarImagen(m.url, m.caption);
+    else agregarTexto(m.texto, 'in');
+  }
+
+  /* ── Render de selector y chat ── */
+  function renderSelector() {
+    bizList.innerHTML = '';
+    NEGOCIOS.forEach(function (n) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'biz';
+      b.setAttribute('aria-pressed', String(n.id === negocio.id));
+      b.innerHTML = '<span class="biz-icon" aria-hidden="true">' + n.icono + '</span>' +
+        '<span><span class="biz-name">' + escapeHtml(n.rubro) + '</span>' +
+        '<span class="biz-desc">' + escapeHtml(n.descripcion) + '</span></span>';
+      b.addEventListener('click', function () {
+        if (n.id === negocio.id) return;
+        negocio = n;
+        try { history.replaceState(null, '', '?rubro=' + n.id + (MOCK && params.get('mock') ? '&mock=1' : '')); } catch (e) {}
+        renderSelector();
+        reiniciar();
+      });
+      bizList.appendChild(b);
+    });
+
+    chipsBox.innerHTML = '';
+    negocio.sugerencias.forEach(function (s) {
+      var c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'chip';
+      c.textContent = s;
+      c.disabled = ocupado;
+      c.addEventListener('click', function () {
+        enviar(s);
+        if (window.matchMedia('(max-width: 900px)').matches) body.closest('.phone').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      chipsBox.appendChild(c);
+    });
+  }
+
+  function reiniciar() {
+    session = nuevaSesion();
+    enviados = 0;
+    ultimoLado = null;
+    typingEl = null;
+    ocupado = false;
+    body.innerHTML = '';
+    waName.textContent = negocio.contacto;
+    waAvatar.textContent = negocio.icono;
+    waStatus.textContent = 'en línea';
+    input.value = '';
+    autoAlto();
+    setOcupado(false);
+
+    var dia = document.createElement('div');
+    dia.className = 'wa-day'; dia.textContent = 'HOY';
+    body.appendChild(dia);
+    var e2e = document.createElement('div');
+    e2e.className = 'wa-e2e';
+    e2e.textContent = '🔒 Demo de Escal IA. Datos y pedidos ficticios.' + (MOCK ? ' (modo simulado)' : '');
+    body.appendChild(e2e);
+
+    agregarTexto(negocio.saludo, 'in');
+  }
+
+  /* ── Input ── */
+  function autoAlto() {
+    input.style.height = '21px';
+    input.style.height = Math.min(input.scrollHeight, 110) + 'px';
+  }
+  input.addEventListener('input', function () {
+    autoAlto();
+    sendBtn.disabled = ocupado || !input.value.trim();
+  });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); enviar(input.value); }
+  });
+  form.addEventListener('submit', function (e) { e.preventDefault(); enviar(input.value); });
+  $('resetBtn').addEventListener('click', reiniciar);
+  lightbox.addEventListener('click', function () { lightbox.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+
+  renderSelector();
+  reiniciar();
+})();
+</script>
+</body>
+</html>
