@@ -247,6 +247,48 @@
     .wa-send:focus-visible, .wa-reset:focus-visible, .biz:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent-green-lt); outline-offset: 2px; }
 
     /* Lightbox */
+    .quota { text-align: center; font-size: 13px; color: var(--fg-sub); margin-top: 14px; }
+    .quota strong { color: var(--fg); }
+
+    .wa-locked {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px 12px;
+      background: #f0f2f5; flex-shrink: 0;
+    }
+    .wa-locked[hidden], .wa-footer[hidden] { display: none; }
+    .wa-locked span { flex: 1; font-size: 13px; color: #54656f; line-height: 1.3; }
+    .wa-locked button {
+      background: var(--wa-send); color: #fff; border: none; border-radius: 999px;
+      padding: 10px 16px; font-weight: 600; font-size: 14px; white-space: nowrap;
+    }
+    .wa-locked button:focus-visible { outline: 2px solid var(--accent-green-lt); outline-offset: 2px; }
+
+    /* Popup de agenda (Calendly) */
+    .cal-modal {
+      position: fixed; inset: 0; z-index: 110; display: none; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(2, 3, 10, 0.78);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .cal-modal.open { display: flex; }
+    .cal-panel {
+      width: min(960px, 100%); max-height: calc(100vh - 40px); max-height: calc(100svh - 40px);
+      display: flex; flex-direction: column; background: #0a1633;
+      border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    }
+    .cal-head { padding: 22px 24px 14px; display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; }
+    .cal-head h2 { font-size: clamp(20px, 2.6vw, 26px); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .cal-head p { font-size: 15px; color: var(--fg-sub); line-height: 1.6; max-width: 620px; }
+    .cal-close {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+      background: rgba(255,255,255,.06); color: var(--fg); font-size: 18px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cal-close:hover { background: rgba(255,255,255,.12); }
+    .cal-close:focus-visible, .cal-foot a:focus-visible { outline: 2px solid var(--accent-green-lt); outline-offset: 2px; }
+    .cal-frame { flex: 1; width: 100%; min-height: 560px; border: 0; background: #fff; }
+    .cal-foot { padding: 12px 24px 16px; font-size: 13px; color: var(--fg-sub); display: flex; gap: 18px; flex-wrap: wrap; }
+    .cal-foot a { color: var(--accent-green); text-decoration: underline; }
+
     .lightbox {
       position: fixed; inset: 0; background: rgba(0,0,0,.85); display: none;
       align-items: center; justify-content: center; z-index: 100; padding: 24px; cursor: zoom-out;
@@ -271,6 +313,13 @@
       .lead { margin-bottom: 20px; }
       .biz-list, .chips { margin-bottom: 20px; }
       .desk-only { display: none; }
+    }
+    @media (max-width: 600px) {
+      .cal-modal { padding: 0; }
+      .cal-panel { width: 100%; height: 100vh; height: 100svh; max-height: none; border-radius: 0; border: none; }
+      .cal-head { padding: 18px 16px 10px; }
+      .cal-frame { min-height: 0; }
+      .cal-foot { padding: 10px 16px 14px; }
     }
     @media (max-width: 480px) {
       .container { padding: 0 16px; }
@@ -310,7 +359,7 @@
       <p class="step-label"><span class="step-num">2</span> Empezá con una de estas o escribí lo tuyo</p>
       <div class="chips" id="chips"></div>
 
-      <p class="note">Es una demo: el catálogo, los precios y los pedidos son ficticios y no se procesan compras reales. No compartas datos personales sensibles.</p>
+      <p class="note">Es una demo: el catálogo, los precios y los pedidos son ficticios y no se procesan compras reales. No compartas datos personales sensibles. Cada visitante puede hacer 4 consultas; para evitar abusos se guarda un identificador técnico de tu dispositivo.</p>
 
       <div class="cta-box desk-only">
         <h3>¿Te imaginás esto en tu WhatsApp?</h3>
@@ -344,12 +393,35 @@
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4 20.85 12.9a1 1 0 0 0 0-1.8L3.4 3.6a1 1 0 0 0-1.39 1.17L4 11l9 1-9 1-1.99 6.23a1 1 0 0 0 1.39 1.17z"/></svg>
             </button>
           </form>
+
+          <div class="wa-locked" id="waLocked" hidden>
+            <span>Tu demo de prueba finalizó.</span>
+            <button type="button" id="lockBtn">Agendar reunión</button>
+          </div>
         </div>
       </div>
+      <p class="quota" id="quota" aria-live="polite"></p>
     </div>
 
   </div>
 </main>
+
+<div class="cal-modal" id="calModal" role="dialog" aria-modal="true" aria-labelledby="calTitle">
+  <div class="cal-panel">
+    <div class="cal-head">
+      <div>
+        <h2 id="calTitle">Ya viste cómo trabaja el agente.</h2>
+        <p id="calText">Completaste las consultas de la demo. Agendá una reunión y lo configuramos con tu catálogo, tus precios y tu forma de vender.</p>
+      </div>
+      <button class="cal-close" id="calClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <iframe class="cal-frame" id="calFrame" title="Agendá una reunión" loading="lazy"></iframe>
+    <div class="cal-foot">
+      <a id="calNewTab" href="#" target="_blank" rel="noopener">Abrir el calendario en otra pestaña</a>
+      <a href="https://wa.me/5493794260543" target="_blank" rel="noopener">Prefiero escribir por WhatsApp</a>
+    </div>
+  </div>
+</div>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-label="Imagen ampliada"><img alt="" /></div>
 
@@ -379,7 +451,14 @@
      ══════════════════════════════════════════════════════════ */
   var WEBHOOK_URL = 'https://neogen-n8n-n8n.8fevsr.easypanel.host/webhook/demo-agente';
   var TIMEOUT_MS  = 60000;
-  var MAX_MENSAJES_POR_SESION = 40;
+
+  /* Cupo de la demo. El límite REAL se aplica en n8n (nodo "Control de cupo");
+     acá solo se refleja en pantalla. Si cambiás el número, cambialo también allá. */
+  var LIMITE_DEFAULT = 4;
+  var CALENDLY_URL   = 'https://calendly.com/TU-USUARIO/demo-escal-ia';   // ← reemplazar por tu link de Calendly
+  var STORE_KEY      = 'escalia_demo_v1';
+  var COOKIE_ID      = 'escalia_did';
+  var COOKIE_USO     = 'escalia_dn';
 
   var NEGOCIOS = [
     {
@@ -417,9 +496,11 @@
   var MOCK     = !WEBHOOK_URL || params.get('mock') === '1';
   var negocio  = NEGOCIOS.find(function (n) { return n.id === params.get('rubro'); }) || NEGOCIOS[0];
   var session  = null;
-  var enviados = 0;
   var ocupado  = false;
   var ultimoLado = null;
+
+  var limite = LIMITE_DEFAULT, usadas = 0, bloqueado = false;
+  var deviceId = '', huellaP = null, fp = '';
 
   /* ── DOM ── */
   var $ = function (id) { return document.getElementById(id); };
@@ -427,6 +508,8 @@
   var form = $('waForm'), input = $('waInput'), sendBtn = $('waSend');
   var waName = $('waName'), waStatus = $('waStatus'), waAvatar = $('waAvatar');
   var lightbox = $('lightbox');
+  var waLocked = $('waLocked'), quota = $('quota');
+  var calModal = $('calModal'), calFrame = $('calFrame');
 
   $('y').textContent = new Date().getFullYear();
 
@@ -557,6 +640,114 @@
     return final;
   }
 
+  /* ── Identidad del dispositivo y cupo ──
+     Se guarda en localStorage Y en cookie, así borrar solo uno no reinicia el cupo.
+     Igual es solo una ayuda de interfaz: el bloqueo real lo decide n8n por
+     dispositivo + huella del navegador + IP + tope global diario. */
+  var ID_OK = /^[A-Za-z0-9_-]{16,64}$/;
+
+  function leerCookie(k) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + k + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  function escribirCookie(k, v) {
+    try {
+      document.cookie = k + '=' + encodeURIComponent(v) + '; max-age=' + (60 * 60 * 24 * 365) + '; path=/; SameSite=Lax' +
+        (location.protocol === 'https:' ? '; Secure' : '');
+    } catch (e) {}
+  }
+  function nuevoId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g, '') + 'd';
+    var a = ''; for (var i = 0; i < 32; i++) a += (Math.random() * 16 | 0).toString(16);
+    return a + 'd';
+  }
+  function cargarEstado() {
+    if (MOCK && params.get('reset') === '1') {          // solo para pruebas en modo simulado
+      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      escribirCookie(COOKIE_ID, ''); escribirCookie(COOKIE_USO, '0');
+    }
+    var st = {};
+    try { st = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { st = {}; }
+    var ck = leerCookie(COOKIE_ID);
+    deviceId = ID_OK.test(st.deviceId || '') ? st.deviceId : (ID_OK.test(ck) ? ck : nuevoId());
+    usadas = Math.max(parseInt(st.usadas, 10) || 0, parseInt(leerCookie(COOKIE_USO), 10) || 0);
+    bloqueado = usadas >= limite;
+    guardarEstado();
+  }
+  function guardarEstado() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ deviceId: deviceId, usadas: usadas })); } catch (e) {}
+    escribirCookie(COOKIE_ID, deviceId);
+    escribirCookie(COOKIE_USO, String(usadas));
+  }
+
+  function djb2(str) {
+    var h = 5381; for (var i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0;
+    return ('00000000' + h.toString(16)).slice(-8);
+  }
+  function calcularHuella() {
+    var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    var partes = [navigator.userAgent, navigator.language, navigator.platform || '',
+      screen.width + 'x' + screen.height + 'x' + (window.devicePixelRatio || 1), screen.colorDepth,
+      navigator.hardwareConcurrency || '', navigator.maxTouchPoints || 0, tz].join('|');
+    if (window.crypto && crypto.subtle && window.TextEncoder) {
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(partes)).then(function (b) {
+        return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('').slice(0, 32);
+      }).catch(function () { return djb2(partes); });
+    }
+    return Promise.resolve(djb2(partes));
+  }
+
+  function actualizarCupo() {
+    if (bloqueado) { quota.innerHTML = '<strong>Demo finalizada.</strong> Gracias por probarla.'; return; }
+    var q = Math.max(0, limite - usadas);
+    quota.innerHTML = 'Te ' + (q === 1 ? 'queda <strong>1</strong> consulta' : 'quedan <strong>' + q + '</strong> consultas') + ' de prueba';
+  }
+  function setBloqueado(mostrarAviso) {
+    bloqueado = true;
+    form.hidden = true;
+    waLocked.hidden = false;
+    input.disabled = true;
+    sendBtn.disabled = true;
+    chipsBox.querySelectorAll('.chip').forEach(function (c) { c.disabled = true; });
+    actualizarCupo();
+    if (mostrarAviso) agregarSistema('Tu demo de prueba finalizó. Agendá una reunión y lo vemos con tu negocio.');
+  }
+  function registrarUso(data) {
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      if (typeof data.limite === 'number' && data.limite > 0) limite = data.limite;
+      if (typeof data.restantes === 'number') usadas = Math.max(usadas, limite - data.restantes);
+      else usadas += 1;
+    } else {
+      usadas += 1;
+    }
+    guardarEstado();
+    if (usadas >= limite) { bloqueado = true; }
+    actualizarCupo();
+  }
+
+  var calPrevFocus = null;
+  function urlCalendly() {
+    var sep = CALENDLY_URL.indexOf('?') > -1 ? '&' : '?';
+    return CALENDLY_URL + sep + 'embed_domain=' + encodeURIComponent(location.hostname || 'escalia.com.ar') +
+      '&embed_type=Inline&hide_gdpr_banner=1&background_color=0a1633&text_color=f0eff0&primary_color=00c896';
+  }
+  function abrirCalendly(motivo) {
+    $('calText').textContent = motivo === 'capacidad'
+      ? 'La demo está con mucha demanda hoy. Agendá una reunión y te mostramos el agente funcionando con tu catálogo.'
+      : 'Completaste las consultas de la demo. Agendá una reunión y lo configuramos con tu catálogo, tus precios y tu forma de vender.';
+    if (!calFrame.getAttribute('src')) calFrame.setAttribute('src', urlCalendly());
+    $('calNewTab').setAttribute('href', CALENDLY_URL);
+    calPrevFocus = document.activeElement;
+    calModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    $('calClose').focus();
+  }
+  function cerrarCalendly() {
+    calModal.classList.remove('open');
+    document.body.style.overflow = '';
+    if (calPrevFocus && calPrevFocus.focus) { try { calPrevFocus.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
   /* ── Llamada al agente ── */
   function llamarAgente(mensaje) {
     if (MOCK) return respuestaSimulada(mensaje);
@@ -568,13 +759,19 @@
       body: JSON.stringify({
         negocio: negocio.id,
         session_id: session,
+        device_id: deviceId,
+        fp: fp,
         mensaje: mensaje,
         origen: 'web-demo',
         fecha: new Date().toISOString()
       }),
       signal: ctrl.signal
     }).then(function (res) {
-      if (res.status === 429) throw new Error('limite');
+      if (res.status === 429) {
+        return res.json().catch(function () { return {}; }).then(function (b) {
+          var e = new Error('limite'); e.body = b || {}; throw e;
+        });
+      }
       if (!res.ok) throw new Error('http ' + res.status);
       var ct = res.headers.get('content-type') || '';
       return ct.indexOf('json') > -1 ? res.json() : res.text();
@@ -597,18 +794,14 @@
 
   function setOcupado(v) {
     ocupado = v;
-    sendBtn.disabled = v || !input.value.trim();
-    chipsBox.querySelectorAll('.chip').forEach(function (c) { c.disabled = v; });
+    sendBtn.disabled = v || bloqueado || !input.value.trim();
+    chipsBox.querySelectorAll('.chip').forEach(function (c) { c.disabled = v || bloqueado; });
   }
 
   function enviar(texto) {
     texto = String(texto || '').trim().slice(0, 500);
     if (!texto || ocupado) return;
-    if (enviados >= MAX_MENSAJES_POR_SESION) {
-      agregarSistema('Llegaste al límite de mensajes de la demo. Reiniciá la conversación para seguir probando.');
-      return;
-    }
-    enviados++;
+    if (bloqueado) { abrirCalendly(); return; }
     agregarTexto(texto, 'out');
     input.value = '';
     autoAlto();
@@ -616,12 +809,16 @@
 
     var sesionEnvio = session;
     espera(350).then(function () {
+      return huellaP;
+    }).then(function () {
       if (sesionEnvio !== session) return;
       marcarLeidos();
       mostrarEscribiendo(true);
       return llamarAgente(texto);
     }).then(function (data) {
-      if (sesionEnvio !== session || data === undefined) return;
+      if (data === undefined) return;
+      registrarUso(data);                       // el servidor ya lo contó, aunque se haya reiniciado el chat
+      if (sesionEnvio !== session) return;
       var msgs = normalizar(data);
       if (!msgs.length) throw new Error('vacio');
       mostrarEscribiendo(false);
@@ -632,19 +829,33 @@
           if (i > 0) { mostrarEscribiendo(true); return espera(500).then(function () { mostrarEscribiendo(false); pintar(m); }); }
           pintar(m);
         });
-      }, Promise.resolve());
+      }, Promise.resolve()).then(function () {
+        if (bloqueado) { setBloqueado(false); return espera(1300).then(function () { abrirCalendly(); }); }
+      });
     }).catch(function (err) {
+      if (err && err.message === 'limite') {           // el servidor dijo basta (dispositivo, IP o tope global)
+        var motivo = (err.body && err.body.motivo) || 'limite';
+        usadas = Math.max(usadas, limite); guardarEstado();
+        mostrarEscribiendo(false);
+        setBloqueado(false);
+        if (sesionEnvio === session) {
+          agregarSistema(motivo === 'capacidad'
+            ? 'La demo está con mucha demanda hoy. Agendá una reunión y te la mostramos en vivo.'
+            : 'Ya usaste las consultas de prueba. Agendá una reunión y lo vemos con tu negocio.');
+        }
+        abrirCalendly(motivo);
+        return;
+      }
       if (sesionEnvio !== session) return;
       mostrarEscribiendo(false);
       var msg = err && err.name === 'AbortError' ? 'El agente tardó demasiado en responder. Probá de nuevo.'
-        : err && err.message === 'limite' ? 'Hay muchas consultas en este momento. Esperá unos segundos y volvé a intentar.'
         : 'No pudimos conectar con el agente. Probá de nuevo en un momento.';
       agregarSistema(msg);
     }).finally(function () {
       if (sesionEnvio !== session) return;
       mostrarEscribiendo(false);
       setOcupado(false);
-      input.focus({ preventScroll: true });
+      if (!bloqueado) input.focus({ preventScroll: true });
     });
   }
 
@@ -680,7 +891,7 @@
       c.type = 'button';
       c.className = 'chip';
       c.textContent = s;
-      c.disabled = ocupado;
+      c.disabled = ocupado || bloqueado;
       c.addEventListener('click', function () {
         enviar(s);
         if (window.matchMedia('(max-width: 900px)').matches) body.closest('.phone').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -691,7 +902,6 @@
 
   function reiniciar() {
     session = nuevaSesion();
-    enviados = 0;
     ultimoLado = null;
     typingEl = null;
     ocupado = false;
@@ -712,6 +922,7 @@
     body.appendChild(e2e);
 
     agregarTexto(negocio.saludo, 'in');
+    if (bloqueado) setBloqueado(true);
   }
 
   /* ── Input ── */
@@ -728,11 +939,20 @@
   });
   form.addEventListener('submit', function (e) { e.preventDefault(); enviar(input.value); });
   $('resetBtn').addEventListener('click', reiniciar);
+  $('lockBtn').addEventListener('click', function () { abrirCalendly(); });
+  $('calClose').addEventListener('click', cerrarCalendly);
+  calModal.addEventListener('click', function (e) { if (e.target === calModal) cerrarCalendly(); });
   lightbox.addEventListener('click', function () { lightbox.classList.remove('open'); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { lightbox.classList.remove('open'); if (calModal.classList.contains('open')) cerrarCalendly(); }
+  });
 
+  cargarEstado();
+  huellaP = calcularHuella().then(function (h) { fp = h; }, function () { fp = ''; });
+  actualizarCupo();
   renderSelector();
   reiniciar();
+  if (bloqueado) setTimeout(function () { abrirCalendly(); }, 700);
 })();
 </script>
 </body>
