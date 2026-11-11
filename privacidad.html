@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Política de Privacidad – Escal IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Política de privacidad de Escal IA – Data Solutions. Cómo recopilamos, usamos y protegemos tus datos personales." />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Escal IA" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:url" content="https://www.escalia.com.ar/privacidad.html" />
+  <meta property="og:title" content="Política de Privacidad – Escal IA" />
+  <meta property="og:description" content="Cómo recopilamos, usamos y protegemos tus datos personales." />
+  <meta property="og:image" content="https://www.escalia.com.ar/assets/og-cover.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <link rel="canonical" href="https://www.escalia.com.ar/privacidad.html" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" />
+
+  <style>
+    :root {
+      --bg:             #02030a;
+      --bg-card:        rgba(10, 25, 55, 0.55);
+      --accent-blue:    #1a6bff;
+      --accent-blue-lt: #4d8fff;
+      --accent-green:   #00c896;
+      --fg:             #f0eff0;
+      --fg-sub:         #b8c4d4;
+      --border:         rgba(76, 201, 255, 0.15);
+      --radius:         14px;
+      --font-display:   'General Sans', sans-serif;
+      --font-body:      'Geist Sans', 'Inter', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: var(--accent-blue-lt); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .glass {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .navbar {
+      position: sticky; top: 0; z-index: 50;
+      border-radius: 0; border-top: none; border-left: none; border-right: none;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .navbar img { height: 40px; width: auto; display: block; }
+    .back-link { font-size: 14px; color: var(--fg-sub); }
+    .back-link:hover { color: var(--fg); text-decoration: none; }
+
+    .wrap { max-width: 760px; margin: 0 auto; padding: 72px 32px 96px; }
+
+    .eyebrow {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.15em; color: var(--accent-green); margin-bottom: 14px;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5.5vw, 52px);
+      font-weight: 700; letter-spacing: -0.02em; line-height: 1.12;
+    }
+    .updated { color: var(--fg-sub); font-size: 14px; margin-top: 12px; opacity: 0.75; }
+    .lede { color: var(--fg-sub); font-size: 17px; margin-top: 28px; }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: 21px; font-weight: 600; letter-spacing: -0.01em;
+      color: var(--fg); margin: 48px 0 14px;
+      padding-top: 28px; border-top: 1px solid var(--border);
+    }
+    h3 {
+      font-family: var(--font-display);
+      font-size: 16px; font-weight: 600; color: var(--fg); margin: 24px 0 8px;
+    }
+    p  { color: var(--fg-sub); font-size: 15.5px; margin-bottom: 14px; }
+    ul { color: var(--fg-sub); font-size: 15.5px; margin: 0 0 14px 22px; }
+    li { margin-bottom: 8px; }
+    strong { color: var(--fg); font-weight: 600; }
+
+    .callout {
+      padding: 24px 28px; margin: 24px 0;
+      border-left: 2px solid var(--accent-blue);
+    }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .legal-note {
+      font-size: 14px; color: var(--fg-sub); opacity: 0.8;
+      padding: 20px 24px; margin: 20px 0; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    }
+    .legal-note p:last-child { margin-bottom: 0; }
+
+    .data-table { width: 100%; border-collapse: collapse; margin: 18px 0 22px; font-size: 14.5px; }
+    .data-table th, .data-table td {
+      text-align: left; padding: 12px 14px;
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    .data-table th { color: var(--fg); font-weight: 600; font-size: 13px;
+      text-transform: uppercase; letter-spacing: 0.06em; }
+    .data-table td { color: var(--fg-sub); }
+
+    footer {
+      padding: 36px 32px; background: rgba(2,3,10,0.8);
+      border-top: 1px solid var(--border);
+      text-align: center; font-size: 14px; color: var(--fg-sub);
+    }
+    footer p { margin-bottom: 4px; font-size: 14px; }
+
+    @media (max-width: 640px) {
+      .wrap { padding: 48px 20px 72px; }
+      .navbar { padding: 14px 20px; }
+      .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+      .data-table thead { display: none; }
+      .data-table tr { padding: 12px 0; border-bottom: 1px solid var(--border); }
+      .data-table td { border: none; padding: 3px 0; }
+      .data-table td:first-child { color: var(--fg); font-weight: 600; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar glass">
+  <a href="/"><img src="assets/logo.png" alt="Escal IA" /></a>
+  <a class="back-link" href="/">← Volver al inicio</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="eyebrow">Legal</div>
+  <h1>Política de Privacidad</h1>
+  <p class="updated">Última actualización: 11 de noviembre de 2026</p>
+
+  <p class="lede">
+    En <strong>Escal IA – Data Solutions</strong> tratamos los datos personales de quienes nos
+    contactan con el mismo cuidado con el que construimos nuestros sistemas. Este documento explica
+    qué datos recopilamos, para qué los usamos, con quién los compartimos y cómo podés pedir que
+    los eliminemos.
+  </p>
+
+  <h2>1. Responsable del tratamiento</h2>
+  <p>
+    El responsable de la base de datos es <strong>Rodríguez Nelson Fabián</strong>, CUIT
+    20-29480154-6, con domicilio en Pío XII 2239, Piso 1, Dpto. A, Corrientes, Argentina, que opera
+    comercialmente bajo la marca <strong>Escal IA – Data Solutions</strong>.
+  </p>
+  <p>
+    Correo de contacto para asuntos de privacidad:
+    <a href="mailto:contacto@escalia.com.ar">contacto@escalia.com.ar</a>
+  </p>
+
+  <h2>2. Qué datos recopilamos</h2>
+  <p>Recopilamos únicamente datos que nos proporcionás de forma voluntaria, por tres vías:</p>
+
+  <h3>a) Formulario de contacto del sitio web</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Dato</th><th>Para qué lo pedimos</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Nombre completo</td><td>Identificarte y dirigirnos a vos correctamente</td></tr>
+      <tr><td>Empresa o negocio</td><td>Entender el contexto de tu consulta</td></tr>
+      <tr><td>Canal principal de ventas</td><td>Preparar una demostración acorde a tu operación</td></tr>
+      <tr><td>Problema a resolver</td><td>Orientar la propuesta a tu caso concreto</td></tr>
+      <tr><td>WhatsApp de contacto</td><td>Responderte y coordinar la demostración</td></tr>
+    </tbody>
+  </table>
+
+  <h3>b) Conversaciones con nuestros agentes de IA</h3>
+  <p>
+    Si interactuás con un agente conversacional nuestro en WhatsApp, Instagram o Facebook Messenger,
+    procesamos tu nombre de perfil, tu número de teléfono o identificador de usuario y el contenido
+    de los mensajes que nos enviás, con el fin de poder responderte.
+  </p>
+
+  <h3>c) Anuncios y formularios en Meta</h3>
+  <p>
+    Si completás un formulario publicitario en Facebook o Instagram, recibimos los datos que hayas
+    cargado en ese formulario, conforme a las políticas de Meta Platforms, Inc.
+  </p>
+  <p>
+    <strong>No recopilamos datos sensibles</strong> en los términos del artículo 2 de la Ley 25.326
+    —origen racial o étnico, opiniones políticas, convicciones religiosas o filosóficas, afiliación
+    sindical, información referente a la salud o a la vida sexual—. Te pedimos que no nos envíes ese
+    tipo de información.
+  </p>
+
+  <h2>3. Para qué usamos tus datos</h2>
+  <ul>
+    <li>Responder tus consultas y coordinar demostraciones de nuestros servicios.</li>
+    <li>Enviarte presupuestos, propuestas e información relacionada con lo que nos consultaste.</li>
+    <li>Prestar y mejorar el servicio contratado, cuando ya sos cliente.</li>
+    <li>Cumplir con obligaciones legales, fiscales y contables.</li>
+  </ul>
+  <p>
+    <strong>No usamos tus datos para ninguna otra finalidad</strong> ni te incorporamos a listas de
+    difusión sin tu consentimiento previo.
+  </p>
+
+  <h2>4. Base legal</h2>
+  <p>
+    El tratamiento se funda en tu consentimiento libre, expreso e informado, prestado al completar
+    un formulario o iniciar una conversación con nosotros, conforme al artículo 5 de la Ley 25.326
+    de Protección de los Datos Personales. Cuando ya existe una relación contractual, el tratamiento
+    se funda además en la ejecución de ese contrato.
+  </p>
+
+  <h2>5. Con quién compartimos tus datos</h2>
+  <p>
+    <strong>No vendemos, alquilamos ni comercializamos tus datos personales.</strong> Los
+    compartimos únicamente con proveedores que actúan como encargados del tratamiento y que
+    necesitamos para prestar el servicio:
+  </p>
+  <ul>
+    <li><strong>Meta Platforms, Inc.</strong> — cuando el contacto se origina en sus plataformas
+      publicitarias o de mensajería, bajo sus propias políticas de privacidad y seguridad.</li>
+    <li><strong>Proveedores de infraestructura en la nube</strong> — para alojar nuestro sitio web,
+      nuestras herramientas de automatización y nuestras bases de datos.</li>
+    <li><strong>Proveedores de modelos de inteligencia artificial</strong> — para generar las
+      respuestas de nuestros agentes conversacionales. Los mensajes se procesan con el único fin de
+      elaborar la respuesta.</li>
+  </ul>
+  <p>
+    Estos proveedores pueden encontrarse fuera de la República Argentina. En esos casos, la
+    transferencia se realiza en el marco del artículo 12 de la Ley 25.326, exigiendo niveles
+    adecuados de protección a través de los acuerdos contractuales correspondientes.
+  </p>
+
+  <h2>6. Cuánto tiempo conservamos tus datos</h2>
+  <p>
+    Conservamos tus datos de contacto mientras exista una relación comercial o un interés legítimo
+    en mantenerla, y por un máximo de <strong>24 meses</strong> desde el último contacto, salvo que
+    nos pidas antes su eliminación o que una obligación legal exija conservarlos por más tiempo.
+    Cumplido el plazo, los datos se eliminan de forma definitiva.
+  </p>
+
+  <h2>7. Tus derechos</h2>
+  <p>
+    Como titular de los datos tenés derecho a <strong>acceder, rectificar, actualizar y suprimir</strong>
+    tu información, así como a retirar tu consentimiento en cualquier momento.
+  </p>
+  <p>
+    Para ejercerlos, escribinos a <a href="mailto:contacto@escalia.com.ar">contacto@escalia.com.ar</a>
+    desde la dirección que nos hayas informado, o por WhatsApp al
+    <a href="https://wa.me/5493794260543" rel="noopener">+54 9 379 426-0543</a>, indicando qué
+    derecho querés ejercer. Respondemos dentro de los <strong>10 días corridos</strong> para los
+    pedidos de acceso y de los <strong>5 días hábiles</strong> para los de rectificación,
+    actualización o supresión, conforme a los artículos 14 y 16 de la Ley 25.326.
+  </p>
+
+  <div class="legal-note">
+    <p>
+      El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los
+      mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un
+      interés legítimo al efecto, conforme lo establecido en el artículo 14, inciso 3 de la
+      Ley N° 25.326.
+    </p>
+    <p>
+      La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, en su carácter de Órgano de Control de la
+      Ley N° 25.326, tiene la atribución de atender las denuncias y reclamos que interpongan quienes
+      resulten afectados en sus derechos por incumplimiento de las normas vigentes en materia de
+      protección de datos personales.
+    </p>
+  </div>
+
+  <h2>8. Cómo solicitar la eliminación de tus datos</h2>
+  <div class="callout glass">
+    <p>
+      Podés pedir la eliminación definitiva de toda tu información enviando un correo a
+      <a href="mailto:contacto@escalia.com.ar">contacto@escalia.com.ar</a> con el asunto
+      <strong>"Eliminación de datos"</strong>, indicando el nombre, el correo electrónico o el
+      número de teléfono con el que nos contactaste.
+    </p>
+    <p>
+      Verificamos tu identidad y eliminamos los datos de nuestras bases dentro de los
+      <strong>30 días corridos</strong>, confirmándote por el mismo medio cuando el proceso esté
+      completo. La eliminación alcanza los datos del formulario web, el historial de conversaciones
+      con nuestros agentes y cualquier registro asociado en nuestros sistemas internos.
+    </p>
+  </div>
+
+  <h2>9. Seguridad</h2>
+  <p>
+    Aplicamos medidas técnicas y organizativas para proteger tus datos contra el acceso no
+    autorizado, la pérdida o la alteración: cifrado en tránsito mediante HTTPS, acceso restringido
+    por credenciales a nuestras bases de datos y herramientas de automatización, y copias de
+    seguridad periódicas. Ningún sistema es infalible, pero trabajamos para que el riesgo sea el
+    mínimo razonable.
+  </p>
+
+  <h2>10. Menores de edad</h2>
+  <p>
+    Nuestros servicios están dirigidos a empresas y personas mayores de 18 años. No recopilamos de
+    forma consciente datos de menores. Si detectamos que recibimos datos de un menor sin la
+    autorización correspondiente, los eliminamos.
+  </p>
+
+  <h2>11. Cambios en esta política</h2>
+  <p>
+    Podemos actualizar esta política para reflejar cambios en nuestros servicios o en la normativa
+    aplicable. La fecha de la última actualización figura al comienzo del documento. Si el cambio
+    afecta de forma sustancial el tratamiento de tus datos, te lo informamos por el medio de
+    contacto que nos hayas dado.
+  </p>
+
+  <h2>12. Contacto</h2>
+  <p>
+    Ante cualquier duda sobre esta política o sobre el tratamiento de tus datos, escribinos a
+    <a href="mailto:contacto@escalia.com.ar">contacto@escalia.com.ar</a> o comunicate por WhatsApp
+    al <a href="https://wa.me/5493794260543" rel="noopener">+54 9 379 426-0543</a>.
+  </p>
+
+</div>
+
+<footer>
+  <p><strong>Escal IA · Data Solutions</strong></p>
+  <p>Rodríguez Nelson Fabián · CUIT 20-29480154-6</p>
+  <p>Pío XII 2239 Piso 1 Dpto. A — Corrientes, Argentina</p>
+  <p><a href="mailto:contacto@escalia.com.ar">contacto@escalia.com.ar</a></p>
+  <p style="opacity:0.5;margin-top:10px;">© <span id="yr"></span> Todos los derechos reservados.</p>
+</footer>
+
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>
